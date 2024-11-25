@@ -1,0 +1,30 @@
+{
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "task manager app",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --env-file=.env --watch -r ts-node/register src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "João Eduardo Panzo - @eduardojpanzo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.9.3",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "fastify": "^5.1.0",
+    "zod": "^3.23.8"
+  }
+}
