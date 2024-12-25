@@ -20,7 +20,7 @@ export default async function taskRoutes(app: FastifyInstance) {
 
     const { userId } = userCredentials.parse(req.query);
 
-    const creatTask = z.object({
+    const bodyRequestShema = z.object({
       title: z.string(),
       description: z.string(),
       dueDate: z.string(),
@@ -29,26 +29,35 @@ export default async function taskRoutes(app: FastifyInstance) {
     });
 
     const { title, description, dueDate, statusId, categoryId } =
-      creatTask.parse(req.body);
+      bodyRequestShema.parse(req.body);
     // Verifica se o usuário existe
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        email: true,
+        id: true,
+      },
+    });
     if (!user) {
       reply.code(404).send({ error: "User not found" });
       return;
     }
 
-    const task = await prisma.task.create({
-      data: {
-        title,
-        description,
-        dueDate: new Date(dueDate),
-        statusId,
-        categoryId,
-        userId,
-      },
-    });
-
-    reply.send(task);
+    try {
+      const task = await prisma.task.create({
+        data: {
+          title,
+          description,
+          dueDate: new Date(dueDate),
+          statusId,
+          categoryId,
+          userId,
+        },
+      });
+      reply.send(task);
+    } catch (err) {
+      reply.code(400).send({ error: "some thing goes wrong" });
+    }
   });
 
   // Atualizar, listar, deletar tarefas

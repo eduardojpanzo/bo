@@ -43,4 +43,19 @@ export default async function userRoutes(app: FastifyInstance) {
 
     reply.send({ message: "User and tasks deleted" });
   });
+
+  app.get("/users", async (req, reply) => {
+    try {
+      const users = await prisma.user.findMany({
+        select: {
+          email: true,
+          id: true,
+          tasks: true,
+        },
+      });
+      reply.send({ items: users, total: users.length });
+    } catch (err) {
+      reply.code(400).send({ error: "some thing goes wrong" });
+    }
+  });
 }
