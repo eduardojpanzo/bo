@@ -60,15 +60,15 @@ export default async function taskRoutes(app: FastifyInstance) {
     }
   });
 
-  // Atualizar, listar, deletar tarefas
+  //listar todas
   app.get("/tasks", async (req, reply) => {
-    const userCredentials = z.object({
-      userId: z.number(),
-    });
+    // const userCredentials = z.object({
+    //   userId: z.number(),
+    // });
 
-    const { userId } = userCredentials.parse(req.query);
+    // const { userId } = userCredentials.parse(req.query);
 
-    const tasks = await prisma.task.findMany({ where: { userId } });
+    const tasks = await prisma.task.findMany(/* { where: { userId } } */);
     reply.send(tasks);
   });
 

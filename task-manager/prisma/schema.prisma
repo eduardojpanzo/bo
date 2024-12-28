@@ -14,7 +14,17 @@ model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
   password String
+  role      String  @default("owner")
   tasks    Task[]
+  session   Session?
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    Int      @unique
+  token     String   @unique
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Task {
@@ -28,6 +38,8 @@ model Task {
   status      TaskStatus @relation(fields: [statusId], references: [id])
   category    Category   @relation(fields: [categoryId], references: [id])
   user        User       @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model TaskStatus {

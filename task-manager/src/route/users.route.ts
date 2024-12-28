@@ -9,12 +9,23 @@ export default async function userRoutes(app: FastifyInstance) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
+      const hasUser = await prisma.user.findUnique({ where: { email: email } });
+
+      if (hasUser) {
+        reply.code(409).send({ error: "O email já está em uso" });
+        return;
+      }
+
       const user = await prisma.user.create({
         data: { email, password: hashedPassword },
       });
-      reply.send({ id: user.id, email: user.email });
+
+      reply.code(201).send({
+        data: { id: user.id, email: user.email },
+        message: "Usuário criado com sucesso",
+      });
     } catch (err) {
-      reply.code(400).send({ error: "User already exists" });
+      reply.code(400).send({ error: "Erro ao criar a conta" });
     }
   });
 
@@ -53,9 +64,54 @@ export default async function userRoutes(app: FastifyInstance) {
           tasks: true,
         },
       });
-      reply.send({ items: users, total: users.length });
+
+      if (!users.length) {
+        reply.send({
+          data: users,
+          message: "lista vazia",
+          total: users.length,
+        });
+        return;
+      }
+
+      reply.send({
+        data: users,
+        message: "lista encotrada",
+        total: users.length,
+      });
     } catch (err) {
-      reply.code(400).send({ error: "some thing goes wrong" });
+      reply.code(400).send({ message: "algum erro desconhecido" });
+    }
+  });
+
+  app.get("/users/:id", async (req, reply) => {
+    const userCredentials = z.object({
+      id: z.string(),
+    });
+
+    const { id } = userCredentials.parse(req.params);
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: Number(id),
+        },
+        select: {
+          email: true,
+          id: true,
+          tasks: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(204).send({ data: user, message: "Usuário não encotrado" });
+        return;
+      }
+      reply
+        .code(200)
+        .send({ data: user, message: "Usuário encotrado com sucesso" });
+    } catch (err) {
+      reply.code(400).send({ message: "algum erro desconhecido" });
     }
   });
 }
