@@ -1,0 +1,56 @@
+import { FastifyInstance } from "fastify";
+import prisma from "../lib/prima";
+import { z } from "zod";
+
+const bodyRequestShema = z.object({
+  name: z.string(),
+});
+
+export default async function categoryRoutes(app: FastifyInstance) {
+  app.post("/categories", async (req, reply) => {
+    try {
+      const { name } = bodyRequestShema.parse(req.body);
+      const category = await prisma.category.create({ data: { name } });
+      reply.code(201).send({ data: category, message: "Criado com sucesso" });
+    } catch (error) {
+      reply.code(400).send({ message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.get("/categories", async (_, reply) => {
+    try {
+      const categories = await prisma.category.findMany();
+      reply.send({ data: categories, message: "econtrado" });
+    } catch (error) {
+      reply.code(400).send({ message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.put("/categories/:id", async (req, reply) => {
+    const { id } = req.params as { id: string };
+    try {
+      const { name } = bodyRequestShema.parse(req.body);
+
+      const updatedCategory = await prisma.category.update({
+        where: { id: parseInt(id) },
+        data: { name },
+      });
+
+      reply
+        .code(201)
+        .send({ data: updatedCategory, message: "Atualizado com sucesso" });
+    } catch (error) {
+      reply.code(400).send({ message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.delete("/categories/:id", async (req, reply) => {
+    try {
+      const { id } = req.params as { id: string };
+      await prisma.category.delete({ where: { id: parseInt(id) } });
+      reply.code(200).send({ message: "categoria removida com sucesso" });
+    } catch (error) {
+      reply.code(400).send({ message: "alguma coisa deu errado" });
+    }
+  });
+}
