@@ -24,7 +24,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             width={70}
             height={70}
             className="w-20 h-24"
-            alt="logo da uniluanda"
+            alt="logo da updaily"
           />
         </SidebarMenuButton>
       </SidebarHeader>
