@@ -1,18 +1,24 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 
 export function SiteBanner() {
+  const nagivate = useNavigate();
   return (
     <section>
       <div className="container mx-auto">
-        <div className="mt-4 text-center">
+        <div className="mt-10 text-center">
           <h2 className="text-4xl leading-snug font-bold uppercase lg:text-6xl lg:leading-[80px]">
-            Trasforme as tuas tarefas
+            Transforme suas tarefas em
           </h2>
           <strong className="text-4xl text-primary leading-snug font-bold uppercase lg:text-6xl lg:leading-[80px]">
-            Mais produtivas
+            produtividade máxima
           </strong>
 
-          <Button className="block mx-auto mt-10 font-bold" size={"lg"}>
+          <Button
+            onClick={() => nagivate("/dashboard")}
+            className="block mx-auto mt-10 font-bold"
+            size={"lg"}
+          >
             Começar
           </Button>
         </div>

@@ -8,19 +8,15 @@ export function SiteHeader() {
         <div className="flex h-full w-max gap-5 text-base max-lg:mt-[30px] max-lg:flex-col max-lg:place-items-end max-lg:gap-5 lg:mx-auto lg:place-items-center">
           <a className="hover:text-primary" href="">
             {" "}
-            About us{" "}
-          </a>
-          <a className="hover:text-primary" href="#pricing">
-            {" "}
-            Pricing{" "}
+            Sobre{" "}
           </a>
           <a className="hover:text-primary" href="">
             {" "}
-            Features{" "}
+            Funcionalidade{" "}
           </a>
           <a className="hover:text-primary" href="">
             {" "}
-            Company{" "}
+            Testemunhos{" "}
           </a>
         </div>
         <button
