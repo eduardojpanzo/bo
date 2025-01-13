@@ -1,23 +1,36 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
 import { Layout } from "./layout";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import DashboardTasks from "@/pages/tasks";
 import Home from "@/pages/home";
 import DashboardTask from "@/pages/task";
+import { Private } from "./private";
+import NotFound from "@/pages/not-found";
 
-export function RootRoutes() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<Home />} />
+      <Route element={<Private />}>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tasks" element={<DashboardTasks />} />
           <Route path="/tasks/:slug" element={<DashboardTask />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
-  );
+      </Route>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Login />} />
+      <Route path="*" element={<NotFound />} />
+    </Route>
+  )
+);
+
+export function RootRoutes() {
+  return <RouterProvider router={router} />;
 }
