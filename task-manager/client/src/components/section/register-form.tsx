@@ -1,3 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,59 +12,144 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { settingData } from "@/lib/fecth";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Link, useNavigate } from "react-router-dom";
+
+interface LoginResponse {
+  id: number;
+  email: string;
+}
+
+const FormSchema = z.object({
+  email: z.string({ message: "Por favor insira um email" }).email({
+    message: "Por favor insira um email válido",
+  }),
+  password: z.string({ message: "Por favor insira uma senha" }).min(6, {
+    message: "A senha deve ter pelo menos 6 caracteres",
+  }),
+  confirmPassword: z.string({ message: "Por favor insira uma senha" }).min(6, {
+    message: "A senha deve ter pelo menos 6 caracteres",
+  }),
+});
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const navigate = useNavigate();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    try {
+      await settingData<HttpResponseDataType<LoginResponse>>(
+        "/register",
+        JSON.stringify(data)
+      );
+
+      toast({
+        title: "Resisto feito com sucesso",
+        description: "faça o ínicio de sessão!",
+      });
+      navigate("/login");
+    } catch {}
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Insira seus dados para criar uma conta
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="flex flex-col gap-6">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormLabel>E-mail</FormLabel>
+                      <FormControl>
+                        <Input placeholder="eduardo@geral.com" {...field} />
+                      </FormControl>
+                      <FormDescription className="sr-only">
+                        Informe o email de acesso
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormLabel>Senha</FormLabel>
+
+                      <FormControl>
+                        <Input type="password" {...field} />
+                      </FormControl>
+                      <FormDescription className="sr-only">
+                        Informe a senha de acesso
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormLabel>Confirmar senha</FormLabel>
+                      <FormControl>
+                        <Input type="password" {...field} />
+                      </FormControl>
+                      <FormDescription className="sr-only">
+                        Informe a senha de acesso
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Criar Conta
+                </Button>
+                {/* <Button variant="outline" className="w-full">
+                  Login with Google
+                </Button> */}
               </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
+              <div className="mt-4 text-center text-sm">
+                Já tem uma Conta?
+                <Link to="/login" className="underline underline-offset-4">
+                  {" "}
+                  Iniciar Sessão
+                </Link>
               </div>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
-              </Button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
-                Sign up
-              </a>
-            </div>
-          </form>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

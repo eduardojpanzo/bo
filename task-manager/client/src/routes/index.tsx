@@ -12,6 +12,7 @@ import Home from "@/pages/home";
 import DashboardTask from "@/pages/task";
 import { Private } from "./private";
 import NotFound from "@/pages/not-found";
+import { Register } from "@/pages/register";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,7 +26,7 @@ const router = createBrowserRouter(
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="*" element={<NotFound />} />
     </Route>
   )
