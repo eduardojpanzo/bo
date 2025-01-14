@@ -1,6 +1,5 @@
-"use client";
-
-import { gettingData, settingData } from "@/lib/fecth";
+import { toast } from "@/hooks/use-toast";
+import { api, settingData } from "@/lib/fecth";
 import { ProfileModel } from "@/models/profile.model";
 import { createSession, deleteSession, getSession } from "@/utils/session";
 import {
@@ -27,11 +26,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fecthProfile = async () => {
     try {
-      const data = await gettingData<ProfileModel>(ProfileModel.ENDPOINT);
-      setToken(token);
-      setProfile(data);
+      const session = await getSession();
+
+      if (!session?.token) {
+        toast({
+          title: "Credências não validadas",
+          description: "faça o ínicio de sessão!",
+          variant: "destructive",
+        });
+        logout();
+        return;
+      }
+
+      const response = await api(ProfileModel.ENDPOINT);
+
+      if (response.status === 401) {
+        toast({
+          title: "Credências não validadas",
+          description: "faça o ínicio de sessão!",
+          variant: "destructive",
+        });
+        logout();
+        return;
+      }
+      const data: HttpResponseDataType<ProfileModel> = await response.json();
+      setProfile(data.data);
+      setToken(session.token);
     } catch {
       setToken(null);
+      toast({
+        title: "Credências não validadas",
+        description: "faça o ínicio de sessão!",
+        variant: "destructive",
+      });
+
+      logout();
     }
   };
 
@@ -55,16 +84,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    let hastoken = false;
-    getSession().then((v) => {
-      if (v?.token) {
-        setToken(v?.token);
-        hastoken = true;
-      }
-    });
-
-    if (!hastoken) return;
-
     fecthProfile();
   }, []);
 
