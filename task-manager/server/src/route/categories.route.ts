@@ -6,11 +6,37 @@ const bodyRequestShema = z.object({
   name: z.string(),
 });
 
+const userCredentials = z.object({
+  user: z.object({
+    id: z.number(),
+    email: z.string(),
+  }),
+});
+
 export default async function categoryRoutes(app: FastifyInstance) {
   app.post("/categories", async (req, reply) => {
     try {
       const { name } = bodyRequestShema.parse(req.body);
-      const category = await prisma.category.create({ data: { name } });
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const category = await prisma.category.create({
+        data: { name, userId: user.id },
+      });
       reply.code(201).send({ data: category, message: "Criado com sucesso" });
     } catch (error) {
       reply.code(400).send({ message: "alguma coisa deu errado" });

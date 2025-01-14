@@ -7,13 +7,39 @@ const bodyRequestShema = z.object({
   name: z.string(),
 });
 
+const userCredentials = z.object({
+  user: z.object({
+    id: z.number(),
+    email: z.string(),
+  }),
+});
+
 export default async function statusRoutes(app: FastifyInstance) {
   app.addHook("onRequest", authenticate);
 
   app.post("/status", async (req, reply) => {
     try {
       const { name } = bodyRequestShema.parse(req.body);
-      const status = await prisma.taskStatus.create({ data: { name } });
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const status = await prisma.taskStatus.create({
+        data: { name, userId: user.id },
+      });
       reply.send({ data: status, message: "Status criado" });
     } catch (error) {
       reply.code(400).send({ message: "alguma coisa deu errado" });
