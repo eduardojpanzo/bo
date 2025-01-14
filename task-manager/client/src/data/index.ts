@@ -21,3 +21,22 @@ export const Menudata = {
     },
   ],
 };
+
+export const StatusTaskColumns = [
+  {
+    name: "to-do",
+    label: "TODO",
+  },
+  {
+    name: "to-do",
+    label: "TODO",
+  },
+  {
+    name: "to-do",
+    label: "TODO",
+  },
+  {
+    name: "to-do",
+    label: "TODO",
+  },
+];
