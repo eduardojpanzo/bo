@@ -12,7 +12,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 w-[620px] h-40 rounded-xl bg-accent sm:grid-cols-2 overflow-hidden">
           <div className="flex flex-col justify-center p-4">
             <strong className="text-3xl font-medium">
-              Olá @{profile?.email?.split("@")[0]}
+              Olá @{profile?.name}
             </strong>
             <span>É bom ver você novamente.</span>
           </div>

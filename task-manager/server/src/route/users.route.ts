@@ -131,6 +131,8 @@ export default async function userRoutes(app: FastifyInstance) {
         select: {
           email: true,
           id: true,
+          name: true,
+          role: true,
           tasks: true,
         },
       });

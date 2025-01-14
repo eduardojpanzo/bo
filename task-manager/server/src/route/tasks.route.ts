@@ -64,10 +64,41 @@ export default async function taskRoutes(app: FastifyInstance) {
       const {
         user: { id },
       } = userCredentials.parse(req.query);
-      console.log(id);
 
       const tasks = await prisma.task.findMany({
         where: { userId: Number(id) },
+      });
+      reply.send({ data: tasks, message: "Encotrado!" });
+    } catch (error) {
+      reply.code(400).send({ message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.get("/tasks/:taskId", async (req, reply) => {
+    try {
+      const { taskId } = req.params as { taskId: string };
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const tasks = await prisma.task.findUnique({
+        where: { userId: Number(id), id: Number(taskId) },
+      });
+      reply.send({ data: tasks, message: "Encotrado!" });
+    } catch (error) {
+      reply.code(400).send({ message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.get("/tasks/category/:categoryId", async (req, reply) => {
+    try {
+      const { categoryId } = req.params as { categoryId: string };
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const tasks = await prisma.task.findMany({
+        where: { userId: Number(id), categoryId: Number(categoryId) },
       });
       reply.send({ data: tasks, message: "Encotrado!" });
     } catch (error) {
