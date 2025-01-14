@@ -16,7 +16,7 @@ app.register(taskRoutes);
 app.register(categoryRoutes);
 app.register(statusRoutes);
 
-app.listen({ port: 5000 }, (err, address) => {
+app.listen({ port: Number(process.env.PORT || 5000) }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
