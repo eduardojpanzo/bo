@@ -109,9 +109,11 @@ export default async function userRoutes(app: FastifyInstance) {
     }
   });
 
-  app.get("/users/:id", async (req, reply) => {
+  app.get("/profile", { preHandler: authenticate }, async (req, reply) => {
     try {
-      const { id } = userParams.parse(req.params);
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
 
       const user = await prisma.user.findUnique({
         where: {
@@ -136,9 +138,10 @@ export default async function userRoutes(app: FastifyInstance) {
     }
   });
 
-  app.delete("/users", { preHandler: authenticate }, async (req, reply) => {
+  app.delete("/profile", { preHandler: authenticate }, async (req, reply) => {
     try {
       const { user } = userCredentials.parse(req.query);
+      console.log(req.query);
 
       await prisma.task.deleteMany({ where: { userId: Number(user.id) } });
       await prisma.user.delete({ where: { id: Number(user.id) } });
