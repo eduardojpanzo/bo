@@ -59,7 +59,10 @@ export function RegisterForm({
     try {
       await settingData<HttpResponseDataType<LoginResponse>>(
         "/register",
-        JSON.stringify(data)
+        JSON.stringify({
+          email: data.email,
+          password: data.password,
+        })
       );
 
       toast({
@@ -67,7 +70,13 @@ export function RegisterForm({
         description: "faça o ínicio de sessão!",
       });
       navigate("/login");
-    } catch {}
+    } catch {
+      toast({
+        title: "Algo deu errado",
+        description: "Tente novamente!",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -120,7 +129,7 @@ export function RegisterForm({
 
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="confirmPassword"
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
                       <FormLabel>Confirmar senha</FormLabel>
@@ -134,7 +143,13 @@ export function RegisterForm({
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  disabled={
+                    !form.formState.isValid || form.formState.isSubmitting
+                  }
+                  className="w-full"
+                >
                   Criar Conta
                 </Button>
                 {/* <Button variant="outline" className="w-full">
