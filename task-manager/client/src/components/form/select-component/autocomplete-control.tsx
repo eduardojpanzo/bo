@@ -60,7 +60,7 @@ export function AutoCompleteControl<
       : path;
 
     const response = await gettingData<HttpResponseDataType<FormValues[]>>(
-      `${apiPath}?${customFilter}`
+      `${apiPath}${customFilter ? "?" + customFilter : ""}`
     );
     const data = response.data;
 

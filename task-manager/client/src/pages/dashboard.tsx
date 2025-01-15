@@ -1,11 +1,22 @@
 import { ResumeCalendar } from "@/components/resume-calendar";
 import { ResumeNumbers } from "@/components/resume-numbers";
+import { FormTask } from "@/components/section/form-task";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-provider";
+import { useDialog } from "@/contexts/dialog-context";
 import { Plus } from "lucide-react";
 
 export default function Dashboard() {
   const { profile } = useAuth();
+  const { openCustomComponent } = useDialog();
+
+  const handleOpenCustom = (id?: string) => {
+    openCustomComponent(FormTask, {
+      params: { id },
+      // handleAccept: async () => await refresh(),
+    });
+  };
+
   return (
     <main className="flex flex-col gap-5 lg:flex-row">
       <section className="flex flex-col gap-8">
@@ -39,7 +50,7 @@ export default function Dashboard() {
             <span>crie uma nova tarefa</span>
           </p>
 
-          <Button>
+          <Button onClick={() => handleOpenCustom()}>
             <Plus />
           </Button>
         </div>
