@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-provider";
 import { useDialog } from "@/contexts/dialog-context";
 import { Plus } from "lucide-react";
+import art from "./../../src/assets/art.png";
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -29,7 +30,7 @@ export default function Dashboard() {
           </div>
           <figure className="hidden relative max-h-40 sm:block">
             <img
-              src="/src/assets/art.png"
+              src={art}
               alt="art"
               className="absolute top-1/2 -translate-y-1/2"
             />

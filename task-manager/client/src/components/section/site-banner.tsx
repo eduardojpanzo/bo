@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import bannerImg from "../../assets/dashboard.png";
 
 export function SiteBanner() {
   const nagivate = useNavigate();
@@ -25,7 +26,7 @@ export function SiteBanner() {
 
         <div className="flex min-w-[350px] max-w-[650px] max-h-[550px] min-h-[450px] mx-auto mt-10 overflow-hidden rounded-2xl shadow-xl max-lg:h-fit max-lg:max-h-[320px] max-lg:min-h-[150px] max-lg:w-[320px]">
           <img
-            src="/src/assets/dashboard.png"
+            src={bannerImg}
             alt="dashboard"
             className="h-full w-full object-cover max-lg:object-contain"
           />
