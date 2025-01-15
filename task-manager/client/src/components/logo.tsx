@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
+import logoImg from "../assets/ntangu-verde.svg";
 
 export function Logo() {
   return (
-    <Link className="h-20  w-36" to="/">
+    <Link to={"/"}>
       <img
-        src="/src/assets/ntangu-verde.svg"
-        alt="ntangu logo"
-        className="object-contain h-full w-full"
+        src={logoImg}
+        width={70}
+        height={70}
+        className="w-36 h-20 text-primary"
+        alt="logo da ntangu"
       />
     </Link>
   );

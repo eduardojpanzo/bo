@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Menudata } from "@/data";
 import { ScrollArea } from "../ui/scroll-area";
-import { Link } from "react-router-dom";
+import { Logo } from "../logo";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -20,15 +20,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           size="lg"
           className="h-[70px] hover:bg-transparent data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <Link to={"/"}>
-            <img
-              src={"/src/assets/ntangu-verde.svg"}
-              width={70}
-              height={70}
-              className="w-36 h-20 text-primary"
-              alt="logo da ntangu"
-            />
-          </Link>
+          <Logo />
         </SidebarMenuButton>
       </SidebarHeader>
       {/* <Separator /> */}
