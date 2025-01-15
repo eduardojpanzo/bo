@@ -67,7 +67,13 @@ export function LoginForm({
       });
 
       navigate("/dashboard");
-    } catch {}
+    } catch {
+      toast({
+        title: "Algo está incorrecto",
+        description: "verifique as credências!",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -125,7 +131,13 @@ export function LoginForm({
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  disabled={
+                    !form.formState.isValid || form.formState.isSubmitting
+                  }
+                  className="w-full"
+                >
                   Iniciar a sessão
                 </Button>
                 {/* <Button variant="outline" className="w-full">

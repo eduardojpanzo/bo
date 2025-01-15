@@ -41,7 +41,16 @@ export default async function userRoutes(app: FastifyInstance) {
       }
 
       const user = await prisma.user.create({
-        data: { email, password: hashedPassword, role: Role.OWNER },
+        data: {
+          email,
+          password: hashedPassword,
+          role: Role.OWNER,
+          name: email.split("@")[0],
+        },
+      });
+
+      await prisma.category.create({
+        data: { name: `${user.email}-all`, userId: user.id },
       });
 
       reply.code(201).send({
@@ -49,7 +58,7 @@ export default async function userRoutes(app: FastifyInstance) {
         message: "Usuário criado com sucesso",
       });
     } catch (err) {
-      reply.code(400).send({ error: "Erro ao criar a conta" });
+      reply.code(400).send({ message: "Erro ao criar a conta" });
     }
   });
 
@@ -59,7 +68,7 @@ export default async function userRoutes(app: FastifyInstance) {
 
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        reply.code(401).send({ error: "Senha ou e-mail está inválido" });
+        reply.code(401).send({ message: "Senha ou e-mail está inválido" });
         return;
       }
 
@@ -109,9 +118,11 @@ export default async function userRoutes(app: FastifyInstance) {
     }
   });
 
-  app.get("/users/:id", async (req, reply) => {
+  app.get("/profile", { preHandler: authenticate }, async (req, reply) => {
     try {
-      const { id } = userParams.parse(req.params);
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
 
       const user = await prisma.user.findUnique({
         where: {
@@ -120,6 +131,8 @@ export default async function userRoutes(app: FastifyInstance) {
         select: {
           email: true,
           id: true,
+          name: true,
+          role: true,
           tasks: true,
         },
       });
@@ -136,11 +149,10 @@ export default async function userRoutes(app: FastifyInstance) {
     }
   });
 
-  app.delete("/users", { preHandler: authenticate }, async (req, reply) => {
+  app.delete("/profile", { preHandler: authenticate }, async (req, reply) => {
     try {
       const { user } = userCredentials.parse(req.query);
 
-      await prisma.task.deleteMany({ where: { userId: Number(user.id) } });
       await prisma.user.delete({ where: { id: Number(user.id) } });
 
       reply.send({ message: "Usuário removido" });

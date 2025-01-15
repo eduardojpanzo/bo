@@ -25,7 +25,7 @@ export function AppHeader() {
         </Breadcrumb> */}
         <nav className="flex items-center gap-2">
           <BellDot className="cursor-pointer" />
-          <AvatarDropDownMemu image="" name="Joao Panzo" />
+          <AvatarDropDownMemu />
         </nav>
       </div>
     </header>

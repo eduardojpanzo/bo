@@ -1,25 +1,73 @@
 import { FastifyInstance } from "fastify";
 import prisma from "../lib/prima";
 import { z } from "zod";
+import { authenticate } from "../utils/auth";
 
 const bodyRequestShema = z.object({
   name: z.string(),
 });
 
+const userCredentials = z.object({
+  user: z.object({
+    id: z.number(),
+    email: z.string(),
+  }),
+});
+
 export default async function categoryRoutes(app: FastifyInstance) {
+  app.addHook("onRequest", authenticate);
+
   app.post("/categories", async (req, reply) => {
     try {
       const { name } = bodyRequestShema.parse(req.body);
-      const category = await prisma.category.create({ data: { name } });
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const category = await prisma.category.create({
+        data: { name, userId: user.id },
+      });
       reply.code(201).send({ data: category, message: "Criado com sucesso" });
     } catch (error) {
       reply.code(400).send({ message: "alguma coisa deu errado" });
     }
   });
 
-  app.get("/categories", async (_, reply) => {
+  app.get("/categories", async (req, reply) => {
     try {
-      const categories = await prisma.category.findMany();
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const categories = await prisma.category.findMany({
+        where: { NOT: { name: `${user.email}-all` }, userId: user.id },
+      });
       reply.send({ data: categories, message: "econtrado" });
     } catch (error) {
       reply.code(400).send({ message: "alguma coisa deu errado" });

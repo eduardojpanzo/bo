@@ -21,3 +21,26 @@ export const Menudata = {
     },
   ],
 };
+
+export const StatusTaskColumns = [
+  {
+    value: "backlog",
+    label: "Pendente",
+    desc: "",
+  },
+  {
+    value: "todo",
+    label: "Para Fazer",
+    desc: "",
+  },
+  {
+    value: "in-progress",
+    label: "Em Progresso",
+    desc: "",
+  },
+  {
+    value: "done",
+    label: "Feito",
+    desc: "",
+  },
+];
