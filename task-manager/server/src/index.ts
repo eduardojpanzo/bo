@@ -3,7 +3,6 @@ import cors from "@fastify/cors";
 import userRoutes from "./route/users.route";
 import taskRoutes from "./route/tasks.route";
 import categoryRoutes from "./route/categories.route";
-import statusRoutes from "./route/status.route";
 
 const app = Fastify();
 
@@ -14,7 +13,6 @@ app.register(cors);
 app.register(userRoutes);
 app.register(taskRoutes);
 app.register(categoryRoutes);
-app.register(statusRoutes);
 
 app.listen({ port: Number(process.env.PORT || 5000) }, (err, address) => {
   if (err) {

@@ -24,19 +24,19 @@ export const Menudata = {
 
 export const StatusTaskColumns = [
   {
-    name: "to-do",
-    label: "TODO",
+    name: "backlog",
+    label: "Pendente",
   },
   {
-    name: "to-do",
-    label: "TODO",
+    name: "todo",
+    label: "Para Fazer",
   },
   {
-    name: "to-do",
-    label: "TODO",
+    name: "in-progress",
+    label: "Em Progresso",
   },
   {
-    name: "to-do",
-    label: "TODO",
+    name: "done",
+    label: "Feito",
   },
 ];
