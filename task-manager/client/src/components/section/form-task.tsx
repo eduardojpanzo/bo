@@ -18,8 +18,8 @@ import { useDialog } from "@/contexts/dialog-context";
 import { gettingData, settingData } from "@/lib/fecth";
 import { TaskModel } from "@/models/task.model";
 import { TextareaWithControl } from "../form/textarea-control";
-import { AutoCompleteControl } from "../form/select-component/autocomplete-control";
-import { CategoryModel } from "@/models/category.model";
+import { SelectWithControl } from "../form/select-component/select-control";
+import { StatusTaskColumns } from "@/data";
 
 const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
@@ -28,39 +28,26 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "O descricão deve ser mais que 10 caracteres",
   }),
-  dueDate: z.string({ message: "Por favor insira uma data" }).datetime({
-    message: "Por favor insira uma data",
-    offset: true,
-    local: true,
-  }),
-  statusId: z.object(
+  // dueDate: z.string({ message: "Por favor insira uma data" }).datetime({
+  //   message: "Por favor insira uma data",
+  //   offset: true,
+  //   local: true,
+  // }),
+  dueDate: z.string().transform((str) => new Date(str)),
+  status: z.object(
     {
       label: z.string(),
-      value: z.string(),
+      value: z.enum(["backlog", "todo", "in-progress", "done"]),
     },
-    { message: "Por favor insira um status" }
+    { message: "Por favor selecione do estado" }
   ),
-  categoryId: z.object(
-    {
-      label: z.string(),
-      value: z.string(),
-    },
-    { message: "Por favor insira uma categoria" }
-  ),
-  // userId: z.object(
-  //   {
-  //     label: z.string(),
-  //     value: z.string(),
-  //   },
-  //   { message: "Por favor insira um usuario" }
-  // ),
 });
 
 type FormShemaType = z.infer<typeof formSchema>;
 
 export function FormTask({ id }: { id?: string }) {
   const { close, form, onSubmit } = useFromAction(id);
-  console.log(form.watch("dueDate"));
+  console.log(form.getFieldState("dueDate"));
 
   return (
     <>
@@ -72,13 +59,13 @@ export function FormTask({ id }: { id?: string }) {
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} id="formTask">
-          <ResponsiveGrid>
-            <InputWithControl
-              label="Título"
-              control={form.control}
-              name="title"
-            />
+          <InputWithControl
+            label="Título"
+            control={form.control}
+            name="title"
+          />
 
+          <ResponsiveGrid>
             <InputWithControl
               label="Data Limite"
               control={form.control}
@@ -86,21 +73,12 @@ export function FormTask({ id }: { id?: string }) {
               type="datetime-local"
             />
 
-            <AutoCompleteControl
-              label="Categoria"
+            <SelectWithControl
+              label="Estado"
+              name="status"
               control={form.control}
-              name="categoryId"
-              path={CategoryModel.ENDPOINT}
-              propertyLabel="name"
-              propertyValue="id"
-            />
-            <AutoCompleteControl
-              label="Status"
-              control={form.control}
-              name="statusId"
-              path="/status"
-              propertyLabel="name"
-              propertyValue="id"
+              data={StatusTaskColumns}
+              placeholder="Selecione um estado"
             />
           </ResponsiveGrid>
           <TextareaWithControl

@@ -10,71 +10,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FieldValues, UseControllerProps } from "react-hook-form";
 import { SelectComponent } from "./select-component";
 import { type Props as SelectProps } from "react-select";
-import { useQuery } from "@tanstack/react-query";
-import { gettingData } from "@/lib/fecth";
 
 export interface AutoCompleteComponentProps<
   FormValues extends FieldValues = FieldValues
 > extends Omit<SelectProps<FieldValues>, "name" | "defaultValue">,
     UseControllerProps<FormValues> {
   label?: string;
-  path: string | string[];
-  propertyLabel: string;
-  propertyValue: string;
-  customFilter?: string;
+  isLoading?: boolean;
+  data:
+    | {
+        label: string;
+        value: string;
+      }[]
+    | undefined;
 }
 
-const getDeepValue = (obj: object, path: string) => {
-  const keys = path.split(".");
-  let value = obj;
-
-  keys.forEach((key) => {
-    if (value && typeof value === "object" && key in value) {
-      value = value[key as keyof typeof value];
-    } else {
-      return undefined;
-    }
-  });
-
-  return value as unknown as string;
-};
-
-export function AutoCompleteControl<
+export function SelectWithControl<
   FormValues extends FieldValues = FieldValues
 >({
   name,
   control,
   label,
+  isLoading,
   isMulti,
-  path,
-  propertyLabel,
-  propertyValue,
-  customFilter,
+  data,
   placeholder,
 }: AutoCompleteComponentProps<FormValues>) {
-  const useLoadOptions = async () => {
-    const apiPath = Array.isArray(path)
-      ? path.filter((item) => !!item).join("/")
-      : path;
-
-    const response = await gettingData<HttpResponseDataType<FormValues[]>>(
-      `${apiPath}${customFilter ? "?" + customFilter : ""}`
-    );
-    const data = response.data;
-
-    const options = data.map((item) => ({
-      label: getDeepValue(item, propertyLabel),
-      value: getDeepValue(item, propertyValue),
-    }));
-
-    return options;
-  };
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["getOptions" + path.toString() + customFilter],
-    queryFn: useLoadOptions,
-  });
-
   return (
     <>
       {isLoading ? (
