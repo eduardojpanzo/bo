@@ -1,12 +1,15 @@
 import { Toaster } from "./components/ui/toaster";
+import { DialogContextProvider } from "./contexts/dialog-context";
 import { RootRoutes } from "./routes";
 
 function App() {
   return (
-    <>
-      <RootRoutes />
-      <Toaster />
-    </>
+    <DialogContextProvider>
+      <>
+        <RootRoutes />
+        <Toaster />
+      </>
+    </DialogContextProvider>
   );
 }
 

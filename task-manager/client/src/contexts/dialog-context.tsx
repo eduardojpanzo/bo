@@ -8,6 +8,7 @@ import React, {
   FunctionComponent,
   ReactElement,
   ReactNode,
+  useContext,
   useState,
 } from "react";
 import {
@@ -34,9 +35,9 @@ const buttonVariants = cva("max-h-[90vh]", {
     size: {
       sm: "min-w-[320px] max-w-[320px]",
       md: "min-w-[490px] max-w-[490px]",
-      xl: "min-w-[700px] max-w-[800px]",
-      "2xl": "min-w-[900px] max-w-[1000px]",
-      lg: "min-w-[1100px] max-w-[1200px]",
+      lg: "min-w-[700px] max-w-[800px]",
+      xl: "min-w-[900px] max-w-[1000px]",
+      "2xl": "min-w-[1100px] max-w-[1200px]",
     },
   },
   defaultVariants: {
@@ -199,4 +200,14 @@ export function DialogContextProvider({
       </Dialog>
     </DialogContext.Provider>
   );
+}
+
+export function useDialog() {
+  const dialogContext = useContext(DialogContext);
+
+  if (!dialogContext) {
+    throw new Error("useDialog must be used within a DialogProvider");
+  }
+
+  return dialogContext;
 }
