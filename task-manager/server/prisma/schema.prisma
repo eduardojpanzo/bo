@@ -11,13 +11,12 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  email      String       @unique
+  id         Int        @id @default(autoincrement())
+  email      String     @unique
   name       String?
   password   String
-  role       String       @default("owner")
+  role       String     @default("owner")
   tasks      Task[]
-  taskStatus TaskStatus[]
   categories Category[]
 
   session Session?
@@ -32,31 +31,22 @@ model Session {
 }
 
 model Task {
-  id          Int        @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String?
   dueDate     DateTime
-  statusId    Int
+  status      String   @default("backlog")
   categoryId  Int
   userId      Int
-  status      TaskStatus @relation(fields: [statusId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
-model TaskStatus {
-  id     Int    @id @default(autoincrement())
-  name   String
-  userId Int
-  tasks  Task[]
-  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Category {
   id     Int    @id @default(autoincrement())
-  name   String
+  name   String @unique
   userId Int
   tasks  Task[]
   User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)

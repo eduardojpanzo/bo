@@ -50,7 +50,7 @@ export default async function userRoutes(app: FastifyInstance) {
       });
 
       await prisma.category.create({
-        data: { name: "all", userId: user.id },
+        data: { name: `${user.email}-all`, userId: user.id },
       });
 
       reply.code(201).send({
