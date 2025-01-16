@@ -19,7 +19,7 @@ export default function DashboardTasks() {
 
   return (
     <main>
-      <div className="flex h-auto gap-4 overflow-y-auto">
+      <div className="flex h-auto max-w-max mx-auto gap-4 overflow-y-auto">
         {StatusTaskColumns.map((item) => (
           <TasksContainer
             key={item.value}

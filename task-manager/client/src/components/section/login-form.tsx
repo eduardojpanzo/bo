@@ -148,7 +148,7 @@ export function LoginForm({
                 Não tem uma Conta?
                 <Link to="/register" className="underline underline-offset-4">
                   {" "}
-                  Resistar-se
+                  Registre-se
                 </Link>
               </div>
             </form>
