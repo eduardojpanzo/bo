@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           description: "faça o ínicio de sessão!",
           variant: "destructive",
         });
-        logout();
+        deleteSession();
+        navigate(`/login`);
         return;
       }
       const data: HttpResponseDataType<ProfileModel> = await response.json();

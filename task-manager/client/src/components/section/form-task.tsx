@@ -45,8 +45,14 @@ const formSchema = z.object({
 
 type FormShemaType = z.infer<typeof formSchema>;
 
-export function FormTask({ id }: { id?: string }) {
-  const { close, form, onSubmit } = useFromAction(id);
+export function FormTask({
+  id,
+  categoryId,
+}: {
+  id?: string;
+  categoryId?: number;
+}) {
+  const { close, form, onSubmit } = useFromAction(id, categoryId);
   console.log(form.getFieldState("dueDate"));
 
   return (
@@ -113,7 +119,7 @@ export function FormTask({ id }: { id?: string }) {
   );
 }
 
-function useFromAction(id?: string) {
+function useFromAction(id?: string, categoryId?: number) {
   const { close, closeAndEmit } = useDialog();
   const [isLoading, setIsLoading] = useState(true);
   const form = useForm<FormShemaType>({
@@ -138,20 +144,27 @@ function useFromAction(id?: string) {
   const onSubmit = async (values: FormShemaType) => {
     try {
       let path = `${TaskModel.ENDPOINT}`;
+      const data = {
+        title: values.title,
+        description: values.description,
+        dueDate: values.dueDate,
+        status: values.status.value,
+        categoryId: categoryId,
+      };
 
       if (id) path = `${path}/${id}`;
 
       await settingData(
         path,
         JSON.stringify({
-          ...values,
+          ...data,
           ...(id ? { id } : {}),
         }),
         id ? "put" : "post"
       );
 
       closeAndEmit({
-        title: `${id ? "Atualizado" : "Salvo"} com sucesso`,
+        title: `${id ? "Atualizado" : "Criado"} com sucesso`,
         variant: "default",
       });
     } catch {}
