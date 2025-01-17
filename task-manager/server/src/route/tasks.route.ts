@@ -168,6 +168,48 @@ export default async function taskRoutes(app: FastifyInstance) {
     }
   });
 
+  app.put("/tasks/status/:taskId", async (req, reply) => {
+    const { taskId } = req.params as { taskId: string };
+
+    try {
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const { status } = z
+        .object({
+          status: z.enum(["backlog", "todo", "in-progress", "done"]).optional(),
+        })
+        .parse(req.body);
+
+      const updatedTask = await prisma.task.update({
+        where: { id: parseInt(taskId) },
+        data: {
+          status,
+        },
+      });
+
+      reply
+        .code(201)
+        .send({ data: updatedTask, message: "Tarefa atualizado com sucesso" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
+    }
+  });
+
   app.delete("/tasks/:taskId", async (req, reply) => {
     const { taskId } = req.params as { taskId: string };
 
