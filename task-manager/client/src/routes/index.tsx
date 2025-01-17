@@ -22,7 +22,7 @@ const router = createBrowserRouter(
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tasks" element={<DashboardTasks />} />
-          <Route path="/tasks/:slug" element={<DashboardTask />} />
+          <Route path="/tasks/:categoryId" element={<DashboardTask />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />

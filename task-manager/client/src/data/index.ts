@@ -22,7 +22,11 @@ export const Menudata = {
   ],
 };
 
-export const StatusTaskColumns = [
+export const StatusTaskColumns: {
+  value: "backlog" | "todo" | "in-progress" | "done";
+  label: string;
+  desc: string;
+}[] = [
   {
     value: "backlog",
     label: "Pendente",
