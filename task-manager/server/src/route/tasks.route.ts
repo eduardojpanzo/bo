@@ -44,10 +44,12 @@ export default async function taskRoutes(app: FastifyInstance) {
         return;
       }
 
+      const slug = `geral@${user.email.split("@")[0]}`;
+
       const geralCategory = await prisma.category.findFirst({
         where: {
           userId: user.id,
-          slug: `geral@${user.email.split("@")[0]}`,
+          slug,
         },
       });
 
@@ -135,10 +137,12 @@ export default async function taskRoutes(app: FastifyInstance) {
         return;
       }
 
+      const slug = `geral@${user.email.split("@")[0]}`;
+
       const geralCategory = await prisma.category.findFirst({
         where: {
           userId: user.id,
-          slug: `geral@${user.email.split("@")[0]}`,
+          slug,
         },
       });
 

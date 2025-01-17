@@ -49,10 +49,12 @@ export default async function userRoutes(app: FastifyInstance) {
         },
       });
 
+      const slug = `geral@${user.email.split("@")[0]}`;
+
       await prisma.category.create({
         data: {
           name: "Geral",
-          slug: `geral@${user.email.split("@")[0]}`,
+          slug,
           userId: user.id,
         },
       });

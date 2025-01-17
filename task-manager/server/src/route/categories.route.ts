@@ -37,12 +37,14 @@ export default async function categoryRoutes(app: FastifyInstance) {
         return;
       }
 
+      const slug = `${name.toLowerCase().split(" ").join("-")}@${
+        user.email.split("@")[0]
+      }`;
+
       const category = await prisma.category.create({
         data: {
           name,
-          slug: `${name.toLowerCase().split(" ").join("-")}@${
-            user.email.split("@")[0]
-          }`,
+          slug,
           userId: user.id,
         },
       });
@@ -136,13 +138,15 @@ export default async function categoryRoutes(app: FastifyInstance) {
         return;
       }
 
+      const slug = `${name.toLowerCase().split(" ").join("-")}@${
+        user.email.split("@")[0]
+      }`;
+
       const updatedCategory = await prisma.category.update({
         where: { id: Number(categoryId) },
         data: {
           name,
-          slug: `${name.toLowerCase().split(" ").join("-")}@${
-            user.email.split("@")[0]
-          }`,
+          slug,
         },
       });
 
