@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export default function DashboardTask() {
-  const { slug } = useParams();
+  const { categoryId } = useParams();
   const [tasks, setTasks] = useState<TaskModel[]>([]);
   const loadData = async () => {
     const resp = await gettingData<HttpResponseDataType<TaskModel[]>>(
-      `${TaskModel.ENDPOINT}/category/${slug}`
+      `${TaskModel.ENDPOINT}/category/${categoryId}`
     );
     setTasks(resp.data);
   };
