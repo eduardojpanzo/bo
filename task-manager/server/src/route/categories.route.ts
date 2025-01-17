@@ -38,11 +38,17 @@ export default async function categoryRoutes(app: FastifyInstance) {
       }
 
       const category = await prisma.category.create({
-        data: { name, userId: user.id },
+        data: {
+          name,
+          slug: `${name.toLowerCase().split(" ").join("-")}@${
+            user.email.split("@")[0]
+          }`,
+          userId: user.id,
+        },
       });
       reply.code(201).send({ data: category, message: "Criado com sucesso" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
@@ -66,39 +72,95 @@ export default async function categoryRoutes(app: FastifyInstance) {
       }
 
       const categories = await prisma.category.findMany({
-        where: { NOT: { name: `${user.email}-all` }, userId: user.id },
+        where: { userId: user.id },
       });
       reply.send({ data: categories, message: "econtrado" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
-  app.put("/categories/:id", async (req, reply) => {
-    const { id } = req.params as { id: string };
+  app.get("/categories/:categoryId", async (req, reply) => {
+    try {
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+      const { categoryId } = req.params as { categoryId: string };
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const category = await prisma.category.findUnique({
+        where: { userId: user.id, id: Number(categoryId) },
+      });
+
+      if (!category) {
+        reply.code(404).send({ message: "Categoria nao encontrada" });
+        return;
+      }
+
+      reply.send({ data: category, message: "econtrado" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.put("/categories/:categoryId", async (req, reply) => {
+    const { categoryId } = req.params as { categoryId: string };
     try {
       const { name } = bodyRequestShema.parse(req.body);
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
 
       const updatedCategory = await prisma.category.update({
-        where: { id: parseInt(id) },
-        data: { name },
+        where: { id: Number(categoryId) },
+        data: {
+          name,
+          slug: `${name.toLowerCase().split(" ").join("-")}@${
+            user.email.split("@")[0]
+          }`,
+        },
       });
 
       reply
         .code(201)
         .send({ data: updatedCategory, message: "Atualizado com sucesso" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
-  app.delete("/categories/:id", async (req, reply) => {
+  app.delete("/categories/:categoryId", async (req, reply) => {
     try {
-      const { id } = req.params as { id: string };
-      await prisma.category.delete({ where: { id: parseInt(id) } });
+      const { categoryId } = req.params as { categoryId: string };
+      await prisma.category.delete({ where: { id: parseInt(categoryId) } });
       reply.code(200).send({ message: "categoria removida com sucesso" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 }

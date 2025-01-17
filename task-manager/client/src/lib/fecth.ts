@@ -1,7 +1,7 @@
 import { getSession } from "@/utils/session";
 
 export async function api(path: string, init?: RequestInit) {
-  const baseUrl = "http://127.0.0.1:5000";
+  const baseUrl = import.meta.env.VITE_API_SERVICE;
   const apiPrefix = "";
   const url = new URL(apiPrefix.concat(path), baseUrl);
   const token = await getSession();

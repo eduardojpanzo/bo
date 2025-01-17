@@ -50,15 +50,19 @@ export default async function userRoutes(app: FastifyInstance) {
       });
 
       await prisma.category.create({
-        data: { name: `${user.email}-all`, userId: user.id },
+        data: {
+          name: "Geral",
+          slug: `geral@${user.email.split("@")[0]}`,
+          userId: user.id,
+        },
       });
 
       reply.code(201).send({
         data: { id: user.id, email: user.email },
         message: "Usuário criado com sucesso",
       });
-    } catch (err) {
-      reply.code(400).send({ message: "Erro ao criar a conta" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "Erro ao criar a conta" });
     }
   });
 
@@ -85,7 +89,7 @@ export default async function userRoutes(app: FastifyInstance) {
 
       reply.send({ data: { token }, message: "Login feito com sucesso" });
     } catch (error) {
-      reply.code(400).send({ message: "algum erro desconhecido" });
+      reply.code(400).send({ erro: error, message: "algum erro desconhecido" });
     }
   });
 
@@ -113,8 +117,8 @@ export default async function userRoutes(app: FastifyInstance) {
         message: "lista encotrada",
         total: users.length,
       });
-    } catch (err) {
-      reply.code(400).send({ message: "algum erro desconhecido" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "algum erro desconhecido" });
     }
   });
 
@@ -144,8 +148,8 @@ export default async function userRoutes(app: FastifyInstance) {
       reply
         .code(200)
         .send({ data: user, message: "Usuário encotrado com sucesso" });
-    } catch (err) {
-      reply.code(400).send({ message: "algum erro desconhecido" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "algum erro desconhecido" });
     }
   });
 
@@ -157,7 +161,7 @@ export default async function userRoutes(app: FastifyInstance) {
 
       reply.send({ message: "Usuário removido" });
     } catch (error) {
-      reply.code(400).send({ message: "algum erro desconhecido" });
+      reply.code(400).send({ erro: error, message: "algum erro desconhecido" });
     }
   });
 }

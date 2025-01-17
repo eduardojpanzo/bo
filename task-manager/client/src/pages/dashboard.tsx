@@ -11,9 +11,8 @@ export default function Dashboard() {
   const { profile } = useAuth();
   const { openCustomComponent } = useDialog();
 
-  const handleOpenCustom = (id?: string) => {
+  const handleOpenCustom = () => {
     openCustomComponent(FormTask, {
-      params: { id },
       // handleAccept: async () => await refresh(),
     });
   };

@@ -23,30 +23,31 @@ export default async function taskRoutes(app: FastifyInstance) {
   app.addHook("onRequest", authenticate);
 
   app.post("/tasks", async (req, reply) => {
-    const {
-      user: { id },
-    } = userCredentials.parse(req.query);
-
-    const { title, description, dueDate, status, categoryId } =
-      bodyRequestShema.parse(req.body);
-
-    const user = await prisma.user.findUnique({
-      where: { id: Number(id) },
-      select: {
-        email: true,
-        id: true,
-      },
-    });
-    if (!user) {
-      reply.code(404).send({ message: "Usúario não existente" });
-      return;
-    }
-
     try {
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const { title, description, dueDate, status, categoryId } =
+        bodyRequestShema.parse(req.body);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
       const geralCategory = await prisma.category.findFirst({
         where: {
           userId: user.id,
-          name: `${user.email}-all`,
+          slug: `geral@${user.email.split("@")[0]}`,
         },
       });
 
@@ -61,8 +62,8 @@ export default async function taskRoutes(app: FastifyInstance) {
         },
       });
       reply.code(201).send({ data: task, message: "Tarefa criado" });
-    } catch (err) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
@@ -77,7 +78,7 @@ export default async function taskRoutes(app: FastifyInstance) {
       });
       reply.send({ data: tasks, message: "Encotrado!" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
@@ -93,7 +94,7 @@ export default async function taskRoutes(app: FastifyInstance) {
       });
       reply.send({ data: tasks, message: "Encotrado!" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
@@ -109,25 +110,49 @@ export default async function taskRoutes(app: FastifyInstance) {
       });
       reply.send({ data: tasks, message: "Encotrado!" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
-  app.put("/tasks/:id", async (req, reply) => {
-    const { id } = req.params as { id: string };
+  app.put("/tasks/:taskId", async (req, reply) => {
+    const { taskId } = req.params as { taskId: string };
 
     try {
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const geralCategory = await prisma.category.findFirst({
+        where: {
+          userId: user.id,
+          slug: `geral@${user.email.split("@")[0]}`,
+        },
+      });
+
       const { title, description, dueDate, status, categoryId } =
         bodyRequestShema.parse(req.body);
 
       const updatedTask = await prisma.task.update({
-        where: { id: parseInt(id) },
+        where: { id: parseInt(taskId) },
         data: {
           title,
           description,
           dueDate: dueDate ? new Date(dueDate) : undefined,
           status,
-          categoryId,
+          categoryId: categoryId ? categoryId : geralCategory?.id,
         },
       });
 
@@ -135,18 +160,18 @@ export default async function taskRoutes(app: FastifyInstance) {
         .code(201)
         .send({ data: updatedTask, message: "Tarefa atualizado com sucesso" });
     } catch (error) {
-      reply.code(400).send({ message: "alguma coisa deu errado" });
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
     }
   });
 
-  app.delete("/tasks/:id", async (req, reply) => {
-    const { id } = req.params as { id: string };
+  app.delete("/tasks/:taskId", async (req, reply) => {
+    const { taskId } = req.params as { taskId: string };
 
     try {
-      await prisma.task.delete({ where: { id: Number(id) } });
+      await prisma.task.delete({ where: { id: Number(taskId) } });
       reply.send({ message: "Tarefa removido" });
     } catch (error) {
-      reply.code(400).send({ message: "algum erro desconhecido" });
+      reply.code(400).send({ erro: error, message: "algum erro desconhecido" });
     }
   });
 }

@@ -20,6 +20,7 @@ import { TaskModel } from "@/models/task.model";
 import { TextareaWithControl } from "../form/textarea-control";
 import { SelectWithControl } from "../form/select-component/select-control";
 import { StatusTaskColumns } from "@/data";
+import { useParams } from "react-router-dom";
 
 const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
@@ -45,9 +46,15 @@ const formSchema = z.object({
 
 type FormShemaType = z.infer<typeof formSchema>;
 
-export function FormTask({ id }: { id?: string }) {
-  const { close, form, onSubmit } = useFromAction(id);
-  console.log(form.getFieldState("dueDate"));
+export function FormTask({
+  id,
+  status,
+}: {
+  id?: number;
+  status?: "backlog" | "todo" | "in-progress" | "done";
+}) {
+  const { categoryId } = useParams();
+  const { close, form, onSubmit } = useFromAction(id, categoryId);
 
   return (
     <>
@@ -76,6 +83,7 @@ export function FormTask({ id }: { id?: string }) {
             <SelectWithControl
               label="Estado"
               name="status"
+              defaultValue={status ? status : ""}
               control={form.control}
               data={StatusTaskColumns}
               placeholder="Selecione um estado"
@@ -113,7 +121,7 @@ export function FormTask({ id }: { id?: string }) {
   );
 }
 
-function useFromAction(id?: string) {
+function useFromAction(id?: number, categoryId?: string) {
   const { close, closeAndEmit } = useDialog();
   const [isLoading, setIsLoading] = useState(true);
   const form = useForm<FormShemaType>({
@@ -123,13 +131,16 @@ function useFromAction(id?: string) {
 
   const loadData = async () => {
     try {
-      const data = await gettingData<TaskModel>(`${TaskModel.ENDPOINT}/${id}`);
+      const { data } = await gettingData<HttpResponseDataType<TaskModel>>(
+        `${TaskModel.ENDPOINT}/${id}`
+      );
 
-      // form.reset({
-      //   nome: data.nome,
-      //   descricao: data.descricao,
-      // } as TaskModel);
-      console.log(data);
+      form.reset({
+        title: data.title,
+        description: data.description ?? "",
+        dueDate: data.dueDate,
+        status: StatusTaskColumns.find((item) => item.value === data.status),
+      });
 
       setIsLoading(false);
     } catch {}
@@ -138,20 +149,26 @@ function useFromAction(id?: string) {
   const onSubmit = async (values: FormShemaType) => {
     try {
       let path = `${TaskModel.ENDPOINT}`;
+      const data = {
+        title: values.title,
+        description: values.description,
+        dueDate: values.dueDate,
+        status: values.status.value,
+        categoryId: categoryId ? Number(categoryId) : undefined,
+      };
 
       if (id) path = `${path}/${id}`;
 
       await settingData(
         path,
         JSON.stringify({
-          ...values,
-          ...(id ? { id } : {}),
+          ...data,
         }),
         id ? "put" : "post"
       );
 
       closeAndEmit({
-        title: `${id ? "Atualizado" : "Salvo"} com sucesso`,
+        title: `${id ? "Atualizado" : "Criado"} com sucesso`,
         variant: "default",
       });
     } catch {}
