@@ -22,6 +22,7 @@ export interface AutoCompleteComponentProps<
   propertyLabel: string;
   propertyValue: string;
   customFilter?: string;
+  defaultValueByPropertyValue?: string;
 }
 
 const getDeepValue = (obj: object, path: string) => {
@@ -51,6 +52,7 @@ export function AutoCompleteControl<
   propertyValue,
   customFilter,
   placeholder,
+  defaultValueByPropertyValue,
 }: AutoCompleteComponentProps<FormValues>) {
   const useLoadOptions = async () => {
     const apiPath = Array.isArray(path)
@@ -95,6 +97,9 @@ export function AutoCompleteControl<
                   createAble={false}
                   isMulti={isMulti}
                   options={data}
+                  defaultValue={data?.find(
+                    (item) => item.value == defaultValueByPropertyValue
+                  )}
                   placeholder={placeholder}
                   {...field}
                 />

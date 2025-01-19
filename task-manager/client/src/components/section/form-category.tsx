@@ -91,12 +91,12 @@ function useFromAction(id?: number) {
 
   const onSubmit = async (values: FormShemaType) => {
     try {
-      let path = `${CategoryModel.ENDPOINT}`;
+      const path = id
+        ? `${CategoryModel.ENDPOINT}/${id}`
+        : `${CategoryModel.ENDPOINT}`;
       const data = {
         name: values.name,
       };
-
-      if (id) path = `${path}/${id}`;
 
       await api(path, {
         method: id ? "PUT" : "POST",

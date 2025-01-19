@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Edit, Plus } from "lucide-react";
 import { useDialog } from "@/contexts/dialog-context";
 import { FormCategory } from "./section/form-category";
+import { FormTask } from "./section/form-task";
 
 export function Top() {
   const { openCustomComponent } = useDialog();
@@ -25,7 +26,7 @@ export function Top() {
     }
   }, [categoryId]);
 
-  const handleOpenCustom = () => {
+  const handleOpenCustomCategory = () => {
     openCustomComponent(FormCategory, {
       params: { id: Number(categoryId) },
       handleAccept: async () => {
@@ -40,14 +41,18 @@ export function Top() {
         <h3>{category?.name ? category.name : "Todas Tarefas"}</h3>
         {category && (
           <Edit
-            onClick={() => handleOpenCustom()}
+            onClick={() => handleOpenCustomCategory()}
             className="hidden group-hover:inline transition-all font-bold cursor-pointer text-primary hover:text-primary/50"
             size={16}
           />
         )}
       </div>
 
-      <Button>
+      <Button
+        onClick={() =>
+          openCustomComponent(FormTask, { params: { categoryId } })
+        }
+      >
         <Plus /> Nova Tarefa
       </Button>
     </div>

@@ -14,9 +14,12 @@ import { ScrollArea } from "./ui/scroll-area";
 import { TaskItem } from "./task-card";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
+import { useDialog } from "@/contexts/dialog-context";
+import { FormTask } from "./section/form-task";
 
 export function TasksBaord() {
   const { categoryId } = useParams();
+  const { openCustomComponent } = useDialog();
   const loadData = async () => {
     const response = await api(
       `${TaskModel.ENDPOINT}${categoryId ? "/category/" + categoryId : ""}`
@@ -27,7 +30,7 @@ export function TasksBaord() {
     return responseData.data;
   };
   const { data, refetch } = useQuery({
-    queryKey: ["tasks-list"],
+    queryKey: ["tasks-list", categoryId],
     queryFn: loadData,
   });
 
@@ -43,16 +46,29 @@ export function TasksBaord() {
             <span className="sr-only">{item.desc}</span>
           </CardHeader>
           <ScrollArea>
-            <CardContent className="flex flex-col gap-3 p-1">
+            <CardContent className="max-w-[230px] flex flex-col gap-3 p-1 pl-0">
               {data
                 ?.filter((task) => task.status === item.value)
                 ?.map((task) => (
-                  <TaskItem refetch={refetch} key={task.id} task={task} />
+                  <TaskItem
+                    refetch={refetch}
+                    categoryId={categoryId}
+                    key={task.id}
+                    task={task}
+                  />
                 ))}
             </CardContent>
           </ScrollArea>
           <CardFooter className="p-1">
-            <Button variant={"ghost"} className="p-3 hover:bg-background">
+            <Button
+              onClick={() =>
+                openCustomComponent(FormTask, {
+                  params: { status: item.value, categoryId: categoryId },
+                })
+              }
+              variant={"ghost"}
+              className="p-3 hover:bg-background"
+            >
               <Plus /> <span>Adicionar tarefa</span>
             </Button>
           </CardFooter>

@@ -93,6 +93,9 @@ export default async function taskRoutes(app: FastifyInstance) {
 
       const tasks = await prisma.task.findUnique({
         where: { userId: Number(id), id: Number(taskId) },
+        include: {
+          category: true,
+        },
       });
       reply.send({ data: tasks, message: "Encotrado!" });
     } catch (error) {

@@ -3,6 +3,6 @@ export class CategoryModel {
   id?: number;
   name?: string;
   userId?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }

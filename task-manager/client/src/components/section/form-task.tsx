@@ -20,7 +20,6 @@ import { TaskModel } from "@/models/task.model";
 import { TextareaWithControl } from "../form/textarea-control";
 import { SelectWithControl } from "../form/select-component/select-control";
 import { StatusTaskColumns } from "@/data";
-import { useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query";
 import { AutoCompleteControl } from "../form/select-component/autocomplete-control";
@@ -72,12 +71,14 @@ type MutationTypeForm = {
 export function FormTask({
   id,
   status,
+  categoryId,
 }: {
   id?: number;
   status?: "backlog" | "todo" | "in-progress" | "done";
+  categoryId?: string;
 }) {
-  const { categoryId } = useParams();
-  const { close, form, onSubmit } = useFromAction(id, categoryId);
+  const { close, form, onSubmit } = useFromAction(id);
+
   return (
     <>
       <DialogHeader>
@@ -95,30 +96,31 @@ export function FormTask({
           />
 
           <ResponsiveGrid>
-            <InputWithControl
-              label="Data Limite"
-              control={form.control}
-              name="dueDate"
-              type="datetime-local"
-            />
-
             <AutoCompleteControl
               label="Categoria"
               name="categoryId"
               propertyLabel="name"
               propertyValue="id"
+              defaultValueByPropertyValue={categoryId ? categoryId : undefined}
               placeholder="Selecione um estado"
               path={CategoryModel.ENDPOINT}
               control={form.control}
             />
-
             <SelectWithControl
               label="Estado"
               name="status"
-              defaultValue={status ? status : ""}
+              defaultValue={StatusTaskColumns.find(
+                (item) => item.value === status
+              )}
               control={form.control}
               data={StatusTaskColumns}
               placeholder="Selecione um estado"
+            />
+            <InputWithControl
+              label="Data Limite"
+              control={form.control}
+              name="dueDate"
+              type="datetime-local"
             />
           </ResponsiveGrid>
           <TextareaWithControl
@@ -138,11 +140,7 @@ export function FormTask({
           Cancelar
         </Button>
         <Button
-          disabled={
-            !form.formState.isValid ||
-            !form.formState.isDirty ||
-            form.formState.isSubmitting
-          }
+          disabled={!form.formState.isValid || form.formState.isSubmitting}
           form="formTask"
           type="submit"
         >
@@ -153,7 +151,7 @@ export function FormTask({
   );
 }
 
-function useFromAction(id?: number, categoryId?: string) {
+function useFromAction(id?: number) {
   const { close, closeAndEmit } = useDialog();
   const [isLoading, setIsLoading] = useState(true);
   const form = useForm<FormShemaType>({
@@ -172,6 +170,10 @@ function useFromAction(id?: number, categoryId?: string) {
         description: data.description ?? "",
         dueDate: data.dueDate,
         status: StatusTaskColumns.find((item) => item.value === data.status),
+        categoryId: {
+          label: data.category?.name,
+          value: Number(data.category?.id),
+        },
       });
 
       setIsLoading(false);
@@ -185,27 +187,34 @@ function useFromAction(id?: number, categoryId?: string) {
         method: methed,
         body: JSON.stringify(data),
       });
-
+    },
+    onError: (error) => {
+      closeAndEmit({
+        title: `Proplemas ao criar tarefa`,
+        description: `Tente novamente! ${error}`,
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
       closeAndEmit({
         title: `${id ? "Atualizado" : "Criado"} com sucesso`,
         variant: "default",
       });
-    },
-    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks-list"] });
     },
   });
   const onSubmit = async (values: FormShemaType) => {
     try {
-      const path = id ? `${TaskModel.ENDPOINT}` : `${TaskModel.ENDPOINT}/${id}`;
+      const path = id ? `${TaskModel.ENDPOINT}/${id}` : `${TaskModel.ENDPOINT}`;
       const data = {
         title: values.title,
         description: values.description,
         dueDate: values.dueDate,
         status: values.status.value,
-        categoryId: categoryId ? Number(categoryId) : undefined,
+        categoryId: values.categoryId.value,
       };
       const methed = id ? "put" : "post";
+      console.log(data);
 
       mutation.mutate({ path, data, methed });
     } catch {}
