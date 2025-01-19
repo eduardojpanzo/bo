@@ -2,13 +2,8 @@ import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/fecth";
 import { ProfileModel } from "@/models/profile.model";
 import { createSession, deleteSession, getSession } from "@/utils/session";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, ReactNode, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export interface AuthContextProps {
@@ -84,9 +79,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate(`/`);
   };
 
-  useEffect(() => {
-    fecthProfile();
-  }, []);
+  useQuery({
+    queryKey: ["profile-data"],
+    queryFn: fecthProfile,
+  });
 
   return (
     <AuthContext.Provider value={{ login, logout, profile }}>

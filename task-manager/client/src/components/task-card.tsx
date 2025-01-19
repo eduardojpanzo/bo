@@ -1,10 +1,10 @@
-import { Calendar, Edit, Trash } from "lucide-react";
+import { Calendar, CheckCheck, Clock, Edit, Trash } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { TaskModel } from "@/models/task.model";
 import { Button } from "./ui/button";
 import { useDialog } from "@/contexts/dialog-context";
 import { FormTask } from "./section/form-task";
-import { calcularDistanciaData } from "@/utils";
+import { calcularDistanciaData, convertRealToTime } from "@/utils";
 
 interface TaskProps {
   refetch?: () => Promise<unknown>;
@@ -44,13 +44,24 @@ export function TaskItem({ task, refetch, categoryId }: TaskProps) {
           <Trash className="p-0" size={12} />
         </Button>
       </div>
-      <Badge
-        variant={"secondary"}
-        data-taskstatus={calcularDistanciaData(new Date(task.dueDate!)).status}
-        className="inline-flex gap-1 mx-1 text data-[taskstatus=orange]:bg-yellow-400/25 data-[taskstatus=orange]:text-yellow-900 data-[taskstatus=orange]:hover:bg-yellow-400/25 data-[taskstatus=green]:bg-green-400/25 data-[taskstatus=green]:text-green-900 data-[taskstatus=green]:hover:bg-green-400/25 data-[taskstatus=blue]:bg-blue-400/25 data-[taskstatus=blue]:text-blue-900 data-[taskstatus=blue]:hover:bg-blue-400/25"
-      >
-        <Calendar size={12} />{" "}
-        {calcularDistanciaData(new Date(task.dueDate!)).valor}
+      {task.status === "done" ? (
+        <Badge variant={"secondary"} className="inline-flex gap-1 mx-1 text ">
+          <CheckCheck size={12} /> Feito
+        </Badge>
+      ) : (
+        <Badge
+          variant={"secondary"}
+          data-taskstatus={
+            calcularDistanciaData(new Date(task.dueDate!)).status
+          }
+          className="inline-flex gap-1 mx-1 text data-[taskstatus=orange]:bg-red-400/25 data-[taskstatus=orange]:text-red-900 data-[taskstatus=orange]:hover:bg-red-400/25 data-[taskstatus=green]:bg-green-400/25 data-[taskstatus=green]:text-green-900 data-[taskstatus=green]:hover:bg-green-400/25 data-[taskstatus=blue]:bg-blue-400/25 data-[taskstatus=blue]:text-blue-900 data-[taskstatus=blue]:hover:bg-blue-400/25"
+        >
+          <Calendar size={12} />{" "}
+          {calcularDistanciaData(new Date(task.dueDate!)).valor}
+        </Badge>
+      )}
+      <Badge variant={"secondary"} className="inline-flex gap-1 mx-1 text ">
+        <Clock size={12} /> {convertRealToTime(task.duration ?? 0)}
       </Badge>
     </div>
   );

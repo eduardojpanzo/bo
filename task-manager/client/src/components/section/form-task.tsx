@@ -24,7 +24,11 @@ import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query";
 import { AutoCompleteControl } from "../form/select-component/autocomplete-control";
 import { CategoryModel } from "@/models/category.model";
-import { convertRealToTime, convertTimeToReal } from "@/utils";
+import {
+  convertRealToTime,
+  convertTimeToReal,
+  convertToDateInput,
+} from "@/utils";
 
 const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
@@ -122,12 +126,14 @@ export function FormTask({
               control={form.control}
               name="dueDate"
               type="datetime-local"
+              step={"1"}
             />
             <InputWithControl
               label="Duração"
               control={form.control}
               name="duration"
               type="time"
+              step={1}
             />
           </ResponsiveGrid>
           <TextareaWithControl
@@ -175,7 +181,7 @@ function useFromAction(id?: number) {
       form.reset({
         title: data.title,
         description: data.description ?? "",
-        dueDate: data.dueDate ?? new Date().toISOString(),
+        dueDate: convertToDateInput(data.dueDate ?? new Date().toISOString()),
         status: StatusTaskColumns.find((item) => item.value === data.status),
         duration: convertRealToTime(data.duration ?? 0),
         categoryId: {
@@ -208,7 +214,12 @@ function useFromAction(id?: number) {
         title: `${id ? "Atualizado" : "Criado"} com sucesso`,
         variant: "default",
       });
-      queryClient.invalidateQueries({ queryKey: ["tasks-list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["tasks-list", "profile-data"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["profile-data"],
+      });
     },
   });
   const onSubmit = async (values: FormShemaType) => {

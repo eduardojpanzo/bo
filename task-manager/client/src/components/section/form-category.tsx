@@ -108,7 +108,9 @@ function useFromAction(id?: number) {
         variant: "default",
       });
 
-      queryClient.invalidateQueries({ queryKey: ["categories-list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["categories-list", "profile-data"],
+      });
     } catch (error) {
       console.log(error);
       closeAndEmit({

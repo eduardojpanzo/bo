@@ -94,7 +94,7 @@ export function convertTimeToReal(time: string): number {
     segundos = partes[2];
   }
 
-  return horas + minutos / 60 + segundos / 3600;
+  return Math.round((horas + minutos / 60 + segundos / 3600) * 100) / 100;
 }
 
 export function convertRealToTime(tempoReal: number): string {
@@ -111,4 +111,15 @@ export function convertRealToTime(tempoReal: number): string {
       .toString()
       .padStart(2, "0")}`;
   }
+}
+
+export function convertToDateInput(value: string) {
+  const date = new Date(value);
+  const formated = `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}T${date
+    .getHours()
+    .toString()
+    .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+  return formated;
 }
