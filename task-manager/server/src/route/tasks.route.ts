@@ -15,6 +15,7 @@ const bodyRequestShema = z.object({
   description: z.string(),
   dueDate: z.string(),
   status: z.enum(["backlog", "todo", "in-progress", "done"]).optional(),
+  duration: z.number().optional(),
   categoryId: z.number().optional(),
 });
 
@@ -28,7 +29,7 @@ export default async function taskRoutes(app: FastifyInstance) {
         user: { id },
       } = userCredentials.parse(req.query);
 
-      const { title, description, dueDate, status, categoryId } =
+      const { title, description, dueDate, status, categoryId, duration } =
         bodyRequestShema.parse(req.body);
 
       const user = await prisma.user.findUnique({
@@ -61,6 +62,7 @@ export default async function taskRoutes(app: FastifyInstance) {
           status,
           categoryId: categoryId ? categoryId : Number(geralCategory?.id),
           userId: Number(id),
+          duration,
         },
       });
       reply.code(201).send({ data: task, message: "Tarefa criado" });
@@ -149,7 +151,7 @@ export default async function taskRoutes(app: FastifyInstance) {
         },
       });
 
-      const { title, description, dueDate, status, categoryId } =
+      const { title, description, dueDate, status, categoryId, duration } =
         bodyRequestShema.parse(req.body);
 
       const updatedTask = await prisma.task.update({
@@ -160,6 +162,7 @@ export default async function taskRoutes(app: FastifyInstance) {
           dueDate: dueDate ? new Date(dueDate) : undefined,
           status,
           categoryId: categoryId ? categoryId : geralCategory?.id,
+          duration,
         },
       });
 
