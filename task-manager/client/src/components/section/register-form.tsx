@@ -25,17 +25,24 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "@/lib/fecth";
 
-const FormSchema = z.object({
-  email: z.string({ message: "Por favor insira um email" }).email({
-    message: "Por favor insira um email válido",
-  }),
-  password: z.string({ message: "Por favor insira uma senha" }).min(6, {
-    message: "A senha deve ter pelo menos 6 caracteres",
-  }),
-  confirmPassword: z.string({ message: "Por favor insira uma senha" }).min(6, {
-    message: "A senha deve ter pelo menos 6 caracteres",
-  }),
-});
+const FormSchema = z
+  .object({
+    email: z.string({ message: "Por favor insira um email" }).email({
+      message: "Por favor insira um email válido",
+    }),
+    password: z.string({ message: "Por favor insira uma senha" }).min(6, {
+      message: "A senha deve ter pelo menos 6 caracteres",
+    }),
+    confirmPassword: z
+      .string({ message: "Por favor insira uma senha" })
+      .min(6, {
+        message: "A senha deve ter pelo menos 6 caracteres",
+      }),
+  })
+  .refine((data) => data.confirmPassword === data.password, {
+    message: "As senhas não conferem",
+    path: ["confirmPassword"],
+  });
 
 export function RegisterForm({
   className,

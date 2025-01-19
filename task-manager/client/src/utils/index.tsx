@@ -78,3 +78,37 @@ export function calcularDistanciaData(data: Date): DataStatus {
 
   return { valor, status };
 }
+
+export function convertTimeToReal(time: string): number {
+  const partes = time.split(":").map(Number);
+  let horas = 0;
+  let minutos = 0;
+  let segundos = 0;
+
+  if (partes.length === 2) {
+    horas = partes[0];
+    minutos = partes[1];
+  } else if (partes.length === 3) {
+    horas = partes[0];
+    minutos = partes[1];
+    segundos = partes[2];
+  }
+
+  return horas + minutos / 60 + segundos / 3600;
+}
+
+export function convertRealToTime(tempoReal: number): string {
+  const horas = Math.floor(tempoReal);
+  const minutos = Math.floor((tempoReal - horas) * 60);
+  const segundos = Math.floor(((tempoReal - horas) * 3600) % 60);
+
+  if (segundos > 0) {
+    return `${horas.toString().padStart(2, "0")}:${minutos
+      .toString()
+      .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+  } else {
+    return `${horas.toString().padStart(2, "0")}:${minutos
+      .toString()
+      .padStart(2, "0")}`;
+  }
+}

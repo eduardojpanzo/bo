@@ -6,6 +6,7 @@ export class TaskModel {
   title?: string;
   description?: string | null;
   dueDate?: string;
+  duration?: number;
   status?: "backlog" | "todo" | "in-progress" | "done";
   categoryId?: number;
   category?: CategoryModel;

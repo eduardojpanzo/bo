@@ -46,8 +46,8 @@ export function TaskItem({ task, refetch, categoryId }: TaskProps) {
       </div>
       <Badge
         variant={"secondary"}
-        data-taskStatus={calcularDistanciaData(new Date(task.dueDate!)).status}
-        className="inline-flex gap-1 mx-1 text data-[taskStatus=orange]:bg-yellow-400/25 data-[taskStatus=orange]:text-yellow-900 data-[taskStatus=orange]:hover:bg-yellow-400/25 data-[taskStatus=green]:bg-green-400/25 data-[taskStatus=green]:text-green-900 data-[taskStatus=green]:hover:bg-green-400/25 data-[taskStatus=blue]:bg-blue-400/25 data-[taskStatus=blue]:text-blue-900 data-[taskStatus=blue]:hover:bg-blue-400/25"
+        data-taskstatus={calcularDistanciaData(new Date(task.dueDate!)).status}
+        className="inline-flex gap-1 mx-1 text data-[taskstatus=orange]:bg-yellow-400/25 data-[taskstatus=orange]:text-yellow-900 data-[taskstatus=orange]:hover:bg-yellow-400/25 data-[taskstatus=green]:bg-green-400/25 data-[taskstatus=green]:text-green-900 data-[taskstatus=green]:hover:bg-green-400/25 data-[taskstatus=blue]:bg-blue-400/25 data-[taskstatus=blue]:text-blue-900 data-[taskstatus=blue]:hover:bg-blue-400/25"
       >
         <Calendar size={12} />{" "}
         {calcularDistanciaData(new Date(task.dueDate!)).valor}

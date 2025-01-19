@@ -80,7 +80,7 @@ export default async function userRoutes(app: FastifyInstance) {
 
       const token = await new SignJWT({ id: user.id, email: user.email })
         .setProtectedHeader({ alg: "HS256" })
-        .setExpirationTime("1h")
+        .setExpirationTime("12h")
         .sign(new TextEncoder().encode(process.env.JWT_SECRET));
 
       await prisma.session.upsert({

@@ -24,6 +24,7 @@ import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query";
 import { AutoCompleteControl } from "../form/select-component/autocomplete-control";
 import { CategoryModel } from "@/models/category.model";
+import { convertRealToTime, convertTimeToReal } from "@/utils";
 
 const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
@@ -32,12 +33,12 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "O descricão deve ser mais que 10 caracteres",
   }),
-  // dueDate: z.string({ message: "Por favor insira uma data" }).datetime({
-  //   message: "Por favor insira uma data",
-  //   offset: true,
-  //   local: true,
-  // }),
-  dueDate: z.string().transform((str) => new Date(str)),
+  dueDate: z
+    .string({ message: "Informe uma data válida" })
+    .transform((date) => new Date(date).toISOString()),
+  duration: z
+    .string({ message: "Por favor insira uma duração" })
+    .time({ message: "Por favor insira uma duração válida" }),
   status: z.object(
     {
       label: z.string(),
@@ -61,7 +62,7 @@ type MutationTypeForm = {
   data: {
     title: string;
     description: string;
-    dueDate: Date;
+    dueDate: string;
     status: "backlog" | "todo" | "in-progress" | "done";
     categoryId: number | undefined;
   };
@@ -122,6 +123,12 @@ export function FormTask({
               name="dueDate"
               type="datetime-local"
             />
+            <InputWithControl
+              label="Duração"
+              control={form.control}
+              name="duration"
+              type="time"
+            />
           </ResponsiveGrid>
           <TextareaWithControl
             label="Descrição"
@@ -168,8 +175,9 @@ function useFromAction(id?: number) {
       form.reset({
         title: data.title,
         description: data.description ?? "",
-        dueDate: data.dueDate,
+        dueDate: data.dueDate ?? new Date().toISOString(),
         status: StatusTaskColumns.find((item) => item.value === data.status),
+        duration: convertRealToTime(data.duration ?? 0),
         categoryId: {
           label: data.category?.name,
           value: Number(data.category?.id),
@@ -212,9 +220,9 @@ function useFromAction(id?: number) {
         dueDate: values.dueDate,
         status: values.status.value,
         categoryId: values.categoryId.value,
+        duration: convertTimeToReal(values.duration),
       };
       const methed = id ? "put" : "post";
-      console.log(data);
 
       mutation.mutate({ path, data, methed });
     } catch {}
