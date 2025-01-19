@@ -11,17 +11,18 @@ import {
 import { Menudata } from "@/data";
 import { ScrollArea } from "../ui/scroll-area";
 import { Logo } from "../logo";
-import { gettingData } from "@/lib/fecth";
 import { CategoryModel } from "@/models/category.model";
 import { DotSquare } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/fecth";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const loadData = async () => {
-    const resp = await gettingData<HttpResponseDataType<CategoryModel[]>>(
-      CategoryModel.ENDPOINT
-    );
-    return resp.data;
+    const response = await api(`${CategoryModel.ENDPOINT}`);
+    const responseData: HttpResponseDataType<CategoryModel[]> =
+      await response.json();
+
+    return responseData.data;
   };
   const { data, refetch } = useQuery({
     queryKey: ["categories-list"],

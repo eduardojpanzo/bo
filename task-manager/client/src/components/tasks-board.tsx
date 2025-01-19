@@ -1,5 +1,5 @@
 import { StatusTaskColumns } from "@/data";
-import { gettingData } from "@/lib/fecth";
+import { api } from "@/lib/fecth";
 import { TaskModel } from "@/models/task.model";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
@@ -18,10 +18,13 @@ import { Plus } from "lucide-react";
 export function TasksBaord() {
   const { categoryId } = useParams();
   const loadData = async () => {
-    const resp = await gettingData<HttpResponseDataType<TaskModel[]>>(
+    const response = await api(
       `${TaskModel.ENDPOINT}${categoryId ? "/category/" + categoryId : ""}`
     );
-    return resp.data;
+    const responseData: HttpResponseDataType<TaskModel[]> =
+      await response.json();
+
+    return responseData.data;
   };
   const { data, refetch } = useQuery({
     queryKey: ["tasks-list"],

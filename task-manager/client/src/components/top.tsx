@@ -1,4 +1,4 @@
-import { gettingData } from "@/lib/fecth";
+import { api } from "@/lib/fecth";
 import { CategoryModel } from "@/models/category.model";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -13,10 +13,10 @@ export function Top() {
   const [category, setCategory] = useState<CategoryModel>();
 
   const loadData = async () => {
-    const resp = await gettingData<HttpResponseDataType<CategoryModel>>(
-      `${CategoryModel.ENDPOINT}/${categoryId}`
-    );
-    setCategory(resp.data);
+    const response = await api(`${CategoryModel.ENDPOINT}/${categoryId}`);
+    const responseData: HttpResponseDataType<CategoryModel> =
+      await response.json();
+    setCategory(responseData.data);
   };
 
   useEffect(() => {
