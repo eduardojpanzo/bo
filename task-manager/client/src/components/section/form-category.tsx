@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useDialog } from "@/contexts/dialog-context";
 import { gettingData, settingData } from "@/lib/fecth";
 import { CategoryModel } from "@/models/category.model";
+import { queryClient } from "@/lib/query";
 
 const formSchema = z.object({
   name: z.string({ message: "Por favor insira o nome" }).min(4, {
@@ -109,6 +110,8 @@ function useFromAction(id?: number) {
         title: `${id ? "Atualizado" : "Criado"} com sucesso`,
         variant: "default",
       });
+
+      queryClient.invalidateQueries({ queryKey: ["categories-list"] });
     } catch (error) {
       console.log(error);
       closeAndEmit({

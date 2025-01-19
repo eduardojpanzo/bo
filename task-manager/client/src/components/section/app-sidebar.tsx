@@ -24,7 +24,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return resp.data;
   };
   const { data, refetch } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories-list"],
     queryFn: loadData,
   });
 

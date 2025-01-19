@@ -1,0 +1,55 @@
+import { gettingData } from "@/lib/fecth";
+import { CategoryModel } from "@/models/category.model";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Edit, Plus } from "lucide-react";
+import { useDialog } from "@/contexts/dialog-context";
+import { FormCategory } from "./section/form-category";
+
+export function Top() {
+  const { openCustomComponent } = useDialog();
+  const { categoryId } = useParams();
+  const [category, setCategory] = useState<CategoryModel>();
+
+  const loadData = async () => {
+    const resp = await gettingData<HttpResponseDataType<CategoryModel>>(
+      `${CategoryModel.ENDPOINT}/${categoryId}`
+    );
+    setCategory(resp.data);
+  };
+
+  useEffect(() => {
+    if (categoryId) {
+      loadData();
+    }
+  }, [categoryId]);
+
+  const handleOpenCustom = () => {
+    openCustomComponent(FormCategory, {
+      params: { id: Number(categoryId) },
+      handleAccept: async () => {
+        await loadData();
+      },
+    });
+  };
+
+  return (
+    <div className="flex items-center justify-between mb-4 group py-4">
+      <div className="flex items-center gap-2">
+        <h3>{category?.name ? category.name : "Todas Tarefas"}</h3>
+        {category && (
+          <Edit
+            onClick={() => handleOpenCustom()}
+            className="hidden group-hover:inline transition-all font-bold cursor-pointer text-primary hover:text-primary/50"
+            size={16}
+          />
+        )}
+      </div>
+
+      <Button>
+        <Plus /> Nova Tarefa
+      </Button>
+    </div>
+  );
+}

@@ -15,17 +15,16 @@ import { TaskItem } from "./task-card";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 
-export default function TasksBord() {
+export function TasksBaord() {
   const { categoryId } = useParams();
-
   const loadData = async () => {
     const resp = await gettingData<HttpResponseDataType<TaskModel[]>>(
-      `${TaskModel.ENDPOINT}${categoryId ? "/category/" + { categoryId } : ""}`
+      `${TaskModel.ENDPOINT}${categoryId ? "/category/" + categoryId : ""}`
     );
     return resp.data;
   };
   const { data, refetch } = useQuery({
-    queryKey: ["tasks"],
+    queryKey: ["tasks-list"],
     queryFn: loadData,
   });
 

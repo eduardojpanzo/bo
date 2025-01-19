@@ -1,9 +1,11 @@
-import TasksBord from "@/components/tasks-bord";
+import { TasksBaord } from "@/components/tasks-board";
+import { Top } from "@/components/top";
 
 export default function DashboardTask() {
   return (
     <main>
-      <TasksBord />
+      <Top />
+      <TasksBaord />
     </main>
   );
 }

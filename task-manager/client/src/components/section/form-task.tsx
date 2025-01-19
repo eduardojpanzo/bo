@@ -21,6 +21,8 @@ import { TextareaWithControl } from "../form/textarea-control";
 import { SelectWithControl } from "../form/select-component/select-control";
 import { StatusTaskColumns } from "@/data";
 import { useParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/query";
 
 const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
@@ -46,6 +48,18 @@ const formSchema = z.object({
 
 type FormShemaType = z.infer<typeof formSchema>;
 
+type MutationTypeForm = {
+  path: string;
+  data: {
+    title: string;
+    description: string;
+    dueDate: Date;
+    status: "backlog" | "todo" | "in-progress" | "done";
+    categoryId: number | undefined;
+  };
+  methed: "put" | "post";
+};
+
 export function FormTask({
   id,
   status,
@@ -55,7 +69,6 @@ export function FormTask({
 }) {
   const { categoryId } = useParams();
   const { close, form, onSubmit } = useFromAction(id, categoryId);
-
   return (
     <>
       <DialogHeader>
@@ -146,9 +159,29 @@ function useFromAction(id?: number, categoryId?: string) {
     } catch {}
   };
 
+  // Mutations
+  const mutation = useMutation({
+    mutationFn: async ({ data, methed, path }: MutationTypeForm) => {
+      await settingData(
+        path,
+        JSON.stringify({
+          ...data,
+        }),
+        methed
+      );
+
+      closeAndEmit({
+        title: `${id ? "Atualizado" : "Criado"} com sucesso`,
+        variant: "default",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks-list"] });
+    },
+  });
   const onSubmit = async (values: FormShemaType) => {
     try {
-      let path = `${TaskModel.ENDPOINT}`;
+      const path = id ? `${TaskModel.ENDPOINT}` : `${TaskModel.ENDPOINT}/${id}`;
       const data = {
         title: values.title,
         description: values.description,
@@ -156,21 +189,9 @@ function useFromAction(id?: number, categoryId?: string) {
         status: values.status.value,
         categoryId: categoryId ? Number(categoryId) : undefined,
       };
+      const methed = id ? "put" : "post";
 
-      if (id) path = `${path}/${id}`;
-
-      await settingData(
-        path,
-        JSON.stringify({
-          ...data,
-        }),
-        id ? "put" : "post"
-      );
-
-      closeAndEmit({
-        title: `${id ? "Atualizado" : "Criado"} com sucesso`,
-        variant: "default",
-      });
+      mutation.mutate({ path, data, methed });
     } catch {}
   };
 
@@ -179,5 +200,5 @@ function useFromAction(id?: number, categoryId?: string) {
       loadData();
     }
   }, [id]);
-  return { form, isLoading, onSubmit, close };
+  return { form, isLoading, mutation, onSubmit, close };
 }
