@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { settingData } from "@/lib/fecth";
 import {
   Form,
   FormControl,
@@ -24,11 +23,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Link, useNavigate } from "react-router-dom";
-
-interface LoginResponse {
-  id: number;
-  email: string;
-}
+import { api } from "@/lib/fecth";
 
 const FormSchema = z.object({
   email: z.string({ message: "Por favor insira um email" }).email({
@@ -57,13 +52,13 @@ export function RegisterForm({
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      await settingData<HttpResponseDataType<LoginResponse>>(
-        "/register",
-        JSON.stringify({
+      await api("/register", {
+        method: "POST",
+        body: JSON.stringify({
           email: data.email,
           password: data.password,
-        })
-      );
+        }),
+      });
 
       toast({
         title: "Resisto feito com sucesso",

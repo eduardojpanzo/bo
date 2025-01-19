@@ -12,6 +12,7 @@ export async function api(path: string, init?: RequestInit) {
       ...init?.headers,
       // Authorization: env.NEXT_PUBLIC_API_TOKEN_CLIENT,
       Authorization: token ? `Bearer ${token.token}` : "",
+      "Content-Type": "application/json",
     },
   });
 }

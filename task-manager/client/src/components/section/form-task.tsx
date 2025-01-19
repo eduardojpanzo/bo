@@ -15,7 +15,7 @@ import { Form } from "@/components/ui/form";
 import { ResponsiveGrid } from "@/components/responsive-grid";
 import { useEffect, useState } from "react";
 import { useDialog } from "@/contexts/dialog-context";
-import { gettingData, settingData } from "@/lib/fecth";
+import { api, gettingData } from "@/lib/fecth";
 import { TaskModel } from "@/models/task.model";
 import { TextareaWithControl } from "../form/textarea-control";
 import { SelectWithControl } from "../form/select-component/select-control";
@@ -23,6 +23,8 @@ import { StatusTaskColumns } from "@/data";
 import { useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query";
+import { AutoCompleteControl } from "../form/select-component/autocomplete-control";
+import { CategoryModel } from "@/models/category.model";
 
 const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
@@ -41,6 +43,13 @@ const formSchema = z.object({
     {
       label: z.string(),
       value: z.enum(["backlog", "todo", "in-progress", "done"]),
+    },
+    { message: "Por favor selecione do estado" }
+  ),
+  categoryId: z.object(
+    {
+      label: z.string(),
+      value: z.number(),
     },
     { message: "Por favor selecione do estado" }
   ),
@@ -91,6 +100,16 @@ export function FormTask({
               control={form.control}
               name="dueDate"
               type="datetime-local"
+            />
+
+            <AutoCompleteControl
+              label="Categoria"
+              name="categoryId"
+              propertyLabel="name"
+              propertyValue="id"
+              placeholder="Selecione um estado"
+              path={CategoryModel.ENDPOINT}
+              control={form.control}
             />
 
             <SelectWithControl
@@ -162,13 +181,10 @@ function useFromAction(id?: number, categoryId?: string) {
   // Mutations
   const mutation = useMutation({
     mutationFn: async ({ data, methed, path }: MutationTypeForm) => {
-      await settingData(
-        path,
-        JSON.stringify({
-          ...data,
-        }),
-        methed
-      );
+      await api(path, {
+        method: methed,
+        body: JSON.stringify(data),
+      });
 
       closeAndEmit({
         title: `${id ? "Atualizado" : "Criado"} com sucesso`,

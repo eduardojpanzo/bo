@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import { useDialog } from "@/contexts/dialog-context";
-import { gettingData, settingData } from "@/lib/fecth";
+import { api, gettingData } from "@/lib/fecth";
 import { CategoryModel } from "@/models/category.model";
 import { queryClient } from "@/lib/query";
 
@@ -98,13 +98,10 @@ function useFromAction(id?: number) {
 
       if (id) path = `${path}/${id}`;
 
-      await settingData(
-        path,
-        JSON.stringify({
-          ...data,
-        }),
-        id ? "put" : "post"
-      );
+      await api(path, {
+        method: id ? "PUT" : "POST",
+        body: JSON.stringify(data),
+      });
 
       closeAndEmit({
         title: `${id ? "Atualizado" : "Criado"} com sucesso`,

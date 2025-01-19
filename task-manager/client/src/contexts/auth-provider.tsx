@@ -1,5 +1,5 @@
 import { toast } from "@/hooks/use-toast";
-import { api, settingData } from "@/lib/fecth";
+import { api } from "@/lib/fecth";
 import { ProfileModel } from "@/models/profile.model";
 import { createSession, deleteSession, getSession } from "@/utils/session";
 import {
@@ -66,15 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, senha: string) => {
-    const response = await settingData<HttpResponseDataType<LoginResponse>>(
-      "/login",
-      JSON.stringify({
-        email,
-        senha,
-      })
-    );
+    const response = await api("/login", {
+      method: "POST",
+      body: JSON.stringify({ email, senha }),
+    });
 
-    await createSession(email, response.data.token);
+    const responseData: HttpResponseDataType<LoginResponse> =
+      await response.json();
+
+    await createSession(email, responseData.data.token);
 
     setToken(token);
   };
