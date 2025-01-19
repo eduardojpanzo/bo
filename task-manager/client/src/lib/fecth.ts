@@ -17,6 +17,7 @@ export async function api(path: string, init?: RequestInit) {
 }
 
 export async function gettingData<T>(path: string): Promise<T> {
+  //colocar o try catch aqui
   const response = await api(path);
   return await response.json();
 }
@@ -26,6 +27,7 @@ export async function settingData<T>(
   body: BodyInit,
   method: "post" | "put" | "patch" = "post"
 ): Promise<T> {
+  //colocar o try catch aqui
   const response = await api(path, {
     body: body,
     method: method,

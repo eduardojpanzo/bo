@@ -5,13 +5,20 @@ import { Button } from "./ui/button";
 import { useDialog } from "@/contexts/dialog-context";
 import { FormTask } from "./section/form-task";
 
-export function TaskItem({ task }: { task: TaskModel }) {
+interface TaskProps {
+  refetch?: () => Promise<unknown>;
+  task: TaskModel;
+}
+
+export function TaskItem({ task, refetch }: TaskProps) {
   const { openCustomComponent } = useDialog();
 
   const handleOpenCustom = (id?: number) => {
     openCustomComponent(FormTask, {
       params: { id, status: task.status },
-      //  handleAccept: async () => await refresh(),
+      handleAccept: async () => {
+        await refetch?.();
+      },
     });
   };
 

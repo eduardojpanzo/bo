@@ -14,27 +14,26 @@ import { Logo } from "../logo";
 import { gettingData } from "@/lib/fecth";
 import { CategoryModel } from "@/models/category.model";
 import { DotSquare } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [categories, setCategories] = React.useState<CategoryModel[]>([]);
   const loadData = async () => {
     const resp = await gettingData<HttpResponseDataType<CategoryModel[]>>(
       CategoryModel.ENDPOINT
     );
-    setCategories(resp.data);
+    return resp.data;
   };
+  const { data, refetch } = useQuery({
+    queryKey: ["categories"],
+    queryFn: loadData,
+  });
 
-  React.useEffect(() => {
-    loadData();
-  }, []);
-
-  const navCategory = [
-    ...categories.map((category) => ({
+  const navCategory =
+    data?.map((category) => ({
       title: `${category.name}`,
       url: `/tasks/${category.id}`,
       icon: DotSquare,
-    })),
-  ];
+    })) ?? [];
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -49,7 +48,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <ScrollArea>
           <NavList title="Geral" items={Menudata.navGeral} />
-          <NavList title="Por Categorias" items={navCategory} />
+          <NavList
+            title="Por Categorias"
+            items={navCategory}
+            refetch={refetch}
+            newButton
+          />
         </ScrollArea>
       </SidebarContent>
       <SidebarRail />

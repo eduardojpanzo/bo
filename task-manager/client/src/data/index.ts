@@ -13,13 +13,6 @@ export const Menudata = {
       icon: ListTodo,
     },
   ],
-  navCategory: [
-    {
-      title: "TRabalho Escolar",
-      url: "/tasks/categoria",
-      icon: DotSquare,
-    },
-  ],
 };
 
 export const StatusTaskColumns: {
