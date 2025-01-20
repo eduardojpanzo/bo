@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { settingData } from "@/lib/fecth";
 import {
   Form,
   FormControl,
@@ -24,23 +23,26 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Link, useNavigate } from "react-router-dom";
+import { api } from "@/lib/fecth";
 
-interface LoginResponse {
-  id: number;
-  email: string;
-}
-
-const FormSchema = z.object({
-  email: z.string({ message: "Por favor insira um email" }).email({
-    message: "Por favor insira um email válido",
-  }),
-  password: z.string({ message: "Por favor insira uma senha" }).min(6, {
-    message: "A senha deve ter pelo menos 6 caracteres",
-  }),
-  confirmPassword: z.string({ message: "Por favor insira uma senha" }).min(6, {
-    message: "A senha deve ter pelo menos 6 caracteres",
-  }),
-});
+const FormSchema = z
+  .object({
+    email: z.string({ message: "Por favor insira um email" }).email({
+      message: "Por favor insira um email válido",
+    }),
+    password: z.string({ message: "Por favor insira uma senha" }).min(6, {
+      message: "A senha deve ter pelo menos 6 caracteres",
+    }),
+    confirmPassword: z
+      .string({ message: "Por favor insira uma senha" })
+      .min(6, {
+        message: "A senha deve ter pelo menos 6 caracteres",
+      }),
+  })
+  .refine((data) => data.confirmPassword === data.password, {
+    message: "As senhas não conferem",
+    path: ["confirmPassword"],
+  });
 
 export function RegisterForm({
   className,
@@ -57,13 +59,13 @@ export function RegisterForm({
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      await settingData<HttpResponseDataType<LoginResponse>>(
-        "/register",
-        JSON.stringify({
+      await api("/register", {
+        method: "POST",
+        body: JSON.stringify({
           email: data.email,
           password: data.password,
-        })
-      );
+        }),
+      });
 
       toast({
         title: "Resisto feito com sucesso",

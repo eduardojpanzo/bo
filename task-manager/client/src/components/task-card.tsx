@@ -1,35 +1,67 @@
-import { Calendar, Edit } from "lucide-react";
+import { Calendar, CheckCheck, Clock, Edit, Trash } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { TaskModel } from "@/models/task.model";
 import { Button } from "./ui/button";
 import { useDialog } from "@/contexts/dialog-context";
 import { FormTask } from "./section/form-task";
+import { calcularDistanciaData, convertRealToTime } from "@/utils";
 
-export function TaskItem({ task }: { task: TaskModel }) {
+interface TaskProps {
+  refetch?: () => Promise<unknown>;
+  task: TaskModel;
+  categoryId?: string;
+}
+
+export function TaskItem({ task, refetch, categoryId }: TaskProps) {
   const { openCustomComponent } = useDialog();
 
   const handleOpenCustom = (id?: number) => {
     openCustomComponent(FormTask, {
-      params: { id, status: task.status },
-      //  handleAccept: async () => await refresh(),
+      params: { id, status: task.status, categoryId },
+      handleAccept: async () => {
+        await refetch?.();
+      },
     });
   };
 
   return (
-    <div className="relative bg-background border-2 border-primary/10 rounded-xl px-2 py-3 hover:border-primary text-sm leading-relaxed cursor-pointer select-none transition-all group">
+    <div className="relative bg-background border-2 border-primary/10 rounded-xl px-2 py-3 hover:border-primary text-sm leading-relaxed cursor-pointer select-none transition-all group max-w-full">
       <h4 className="font-semibold capitalize">{task.title}</h4>
-      <em className="not-italic">{task.description}</em>{" "}
-      <Button
-        className="absolute right-0 top-0 p-2 bg-transparent border-none shadow-none text-primary hover:bg-primary/20"
-        onClick={() => handleOpenCustom(task.id)}
-      >
-        <Edit className="p-0" size={12} />
-      </Button>
-      <Badge
-        variant={"secondary"}
-        className="inline-flex gap-1 mx-1 text bg-yellow-400/25 text-yellow-900 hover:bg-yellow-400/25"
-      >
-        <Calendar size={12} /> Hoje
+      <em className="not-italic line-clamp-2 break-words mb-1">
+        {task.description}
+      </em>{" "}
+      <div className="absolute right-0 top-0 flex items-center gap-1">
+        <Button
+          className="p-2 bg-transparent border-none shadow-none text-primary/30 hover:bg-transparent hover:text-primary"
+          onClick={() => handleOpenCustom(task.id)}
+        >
+          <Edit className="p-0" size={12} />
+        </Button>
+        <Button
+          className="p-2 bg-transparent border-none shadow-none text-destructive/30 hover:bg-transparent hover:text-destructive"
+          onClick={() => handleOpenCustom(task.id)}
+        >
+          <Trash className="p-0" size={12} />
+        </Button>
+      </div>
+      {task.status === "done" ? (
+        <Badge variant={"secondary"} className="inline-flex gap-1 mx-1 text ">
+          <CheckCheck size={12} /> Feito
+        </Badge>
+      ) : (
+        <Badge
+          variant={"secondary"}
+          data-taskstatus={
+            calcularDistanciaData(new Date(task.dueDate!)).status
+          }
+          className="inline-flex gap-1 mx-1 text data-[taskstatus=orange]:bg-red-400/25 data-[taskstatus=orange]:text-red-900 data-[taskstatus=orange]:hover:bg-red-400/25 data-[taskstatus=green]:bg-green-400/25 data-[taskstatus=green]:text-green-900 data-[taskstatus=green]:hover:bg-green-400/25 data-[taskstatus=blue]:bg-blue-400/25 data-[taskstatus=blue]:text-blue-900 data-[taskstatus=blue]:hover:bg-blue-400/25"
+        >
+          <Calendar size={12} />{" "}
+          {calcularDistanciaData(new Date(task.dueDate!)).valor}
+        </Badge>
+      )}
+      <Badge variant={"secondary"} className="inline-flex gap-1 mx-1 text ">
+        <Clock size={12} /> {convertRealToTime(task.duration ?? 0)}
       </Badge>
     </div>
   );

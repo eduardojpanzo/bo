@@ -36,6 +36,7 @@ model Task {
   description String?
   dueDate     DateTime
   status      String   @default("backlog")
+  duration    Float?   @default(0)
   categoryId  Int
   userId      Int
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)

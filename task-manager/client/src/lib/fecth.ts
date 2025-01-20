@@ -12,11 +12,13 @@ export async function api(path: string, init?: RequestInit) {
       ...init?.headers,
       // Authorization: env.NEXT_PUBLIC_API_TOKEN_CLIENT,
       Authorization: token ? `Bearer ${token.token}` : "",
+      "Content-Type": "application/json",
     },
   });
 }
 
 export async function gettingData<T>(path: string): Promise<T> {
+  //colocar o try catch aqui
   const response = await api(path);
   return await response.json();
 }
@@ -26,6 +28,7 @@ export async function settingData<T>(
   body: BodyInit,
   method: "post" | "put" | "patch" = "post"
 ): Promise<T> {
+  //colocar o try catch aqui
   const response = await api(path, {
     body: body,
     method: method,

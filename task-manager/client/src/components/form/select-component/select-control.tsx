@@ -35,6 +35,7 @@ export function SelectWithControl<
   isMulti,
   data,
   placeholder,
+  ...props
 }: AutoCompleteComponentProps<FormValues>) {
   return (
     <>
@@ -52,6 +53,7 @@ export function SelectWithControl<
               </FormDescription>
               <FormControl>
                 <SelectComponent
+                  {...props}
                   createAble={false}
                   isMulti={isMulti}
                   options={data}

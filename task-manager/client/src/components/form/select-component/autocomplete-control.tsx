@@ -11,7 +11,7 @@ import { FieldValues, UseControllerProps } from "react-hook-form";
 import { SelectComponent } from "./select-component";
 import { type Props as SelectProps } from "react-select";
 import { useQuery } from "@tanstack/react-query";
-import { gettingData } from "@/lib/fecth";
+import { api } from "@/lib/fecth";
 
 export interface AutoCompleteComponentProps<
   FormValues extends FieldValues = FieldValues
@@ -22,6 +22,7 @@ export interface AutoCompleteComponentProps<
   propertyLabel: string;
   propertyValue: string;
   customFilter?: string;
+  defaultValueByPropertyValue?: string;
 }
 
 const getDeepValue = (obj: object, path: string) => {
@@ -51,18 +52,20 @@ export function AutoCompleteControl<
   propertyValue,
   customFilter,
   placeholder,
+  defaultValueByPropertyValue,
 }: AutoCompleteComponentProps<FormValues>) {
   const useLoadOptions = async () => {
     const apiPath = Array.isArray(path)
       ? path.filter((item) => !!item).join("/")
       : path;
 
-    const response = await gettingData<HttpResponseDataType<FormValues[]>>(
+    const response = await api(
       `${apiPath}${customFilter ? "?" + customFilter : ""}`
     );
-    const data = response.data;
+    const responseData: HttpResponseDataType<FormValues[]> =
+      await response.json();
 
-    const options = data.map((item) => ({
+    const options = responseData.data.map((item) => ({
       label: getDeepValue(item, propertyLabel),
       value: getDeepValue(item, propertyValue),
     }));
@@ -94,6 +97,9 @@ export function AutoCompleteControl<
                   createAble={false}
                   isMulti={isMulti}
                   options={data}
+                  defaultValue={data?.find(
+                    (item) => item.value == defaultValueByPropertyValue
+                  )}
                   placeholder={placeholder}
                   {...field}
                 />
