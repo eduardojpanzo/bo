@@ -37,9 +37,27 @@ export default function Dashboard() {
         </div>
 
         <div className="flex gap-5 items-center">
-          <ResumeNumbers desc="Horas traballhadas" title="11" />
-          <ResumeNumbers desc="Tarefas Criadas" title="30" />
-          <ResumeNumbers desc="Tarefas concluida" title="17" />
+          <ResumeNumbers
+            desc="Horas traballhadas"
+            title={
+              profile?.tasks
+                ?.filter((task) => task.status === "done")
+                .reduce((acc, task) => acc + (task.duration ?? 0), 0)
+                .toString() ?? "0"
+            }
+          />
+          <ResumeNumbers
+            desc="Tarefas Criadas"
+            title={profile?.tasks?.length.toString() ?? "0"}
+          />
+          <ResumeNumbers
+            desc="Tarefas concluida"
+            title={
+              profile?.tasks
+                ?.filter((task) => task.status === "done")
+                .length.toString() ?? "0"
+            }
+          />
         </div>
       </section>
 

@@ -27,12 +27,13 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 interface ModalProps {
-  size?: "sm" | "md" | "lg" | "xl" | "2xl";
+  size?: "default" | "sm" | "md" | "lg" | "xl" | "2xl";
 }
 
-const buttonVariants = cva("max-h-[90vh]", {
+const buttonVariants = cva("max-h-[90vw]", {
   variants: {
     size: {
+      default: "",
       sm: "min-w-[320px] max-w-[320px]",
       md: "min-w-[490px] max-w-[490px]",
       lg: "min-w-[700px] max-w-[800px]",
@@ -41,7 +42,7 @@ const buttonVariants = cva("max-h-[90vh]", {
     },
   },
   defaultVariants: {
-    size: "md",
+    size: "default",
   },
 });
 
@@ -88,7 +89,7 @@ export function DialogContextProvider({
   const [customComponent, setCustomComponent] = useState<ReactNode | null>(
     null
   );
-  const [modalSize, setModalSize] = useState<ModalProps["size"]>("md");
+  const [modalSize, setModalSize] = useState<ModalProps["size"]>("default");
   const [sendingRequest, setSendingRequest] = useState(false);
 
   const handleOpen = (
@@ -106,7 +107,7 @@ export function DialogContextProvider({
       title: "Confirma Deletar",
       handleAccept: config.handleAccept,
     });
-    setModalSize("md");
+    setModalSize("default");
     setIsOpen(true);
   };
 
@@ -133,7 +134,7 @@ export function DialogContextProvider({
     setModalProps({
       ...config,
     });
-    setModalSize(config.size ?? "md");
+    setModalSize(config.size ?? "default");
     setIsOpen(true);
   };
 

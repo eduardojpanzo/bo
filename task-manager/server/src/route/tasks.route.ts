@@ -15,6 +15,7 @@ const bodyRequestShema = z.object({
   description: z.string(),
   dueDate: z.string(),
   status: z.enum(["backlog", "todo", "in-progress", "done"]).optional(),
+  duration: z.number().optional(),
   categoryId: z.number().optional(),
 });
 
@@ -28,7 +29,7 @@ export default async function taskRoutes(app: FastifyInstance) {
         user: { id },
       } = userCredentials.parse(req.query);
 
-      const { title, description, dueDate, status, categoryId } =
+      const { title, description, dueDate, status, categoryId, duration } =
         bodyRequestShema.parse(req.body);
 
       const user = await prisma.user.findUnique({
@@ -61,6 +62,7 @@ export default async function taskRoutes(app: FastifyInstance) {
           status,
           categoryId: categoryId ? categoryId : Number(geralCategory?.id),
           userId: Number(id),
+          duration,
         },
       });
       reply.code(201).send({ data: task, message: "Tarefa criado" });
@@ -93,6 +95,9 @@ export default async function taskRoutes(app: FastifyInstance) {
 
       const tasks = await prisma.task.findUnique({
         where: { userId: Number(id), id: Number(taskId) },
+        include: {
+          category: true,
+        },
       });
       reply.send({ data: tasks, message: "Encotrado!" });
     } catch (error) {
@@ -146,7 +151,7 @@ export default async function taskRoutes(app: FastifyInstance) {
         },
       });
 
-      const { title, description, dueDate, status, categoryId } =
+      const { title, description, dueDate, status, categoryId, duration } =
         bodyRequestShema.parse(req.body);
 
       const updatedTask = await prisma.task.update({
@@ -157,6 +162,49 @@ export default async function taskRoutes(app: FastifyInstance) {
           dueDate: dueDate ? new Date(dueDate) : undefined,
           status,
           categoryId: categoryId ? categoryId : geralCategory?.id,
+          duration,
+        },
+      });
+
+      reply
+        .code(201)
+        .send({ data: updatedTask, message: "Tarefa atualizado com sucesso" });
+    } catch (error) {
+      reply.code(400).send({ erro: error, message: "alguma coisa deu errado" });
+    }
+  });
+
+  app.put("/tasks/status/:taskId", async (req, reply) => {
+    const { taskId } = req.params as { taskId: string };
+
+    try {
+      const {
+        user: { id },
+      } = userCredentials.parse(req.query);
+
+      const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {
+          email: true,
+          id: true,
+        },
+      });
+
+      if (!user) {
+        reply.code(404).send({ message: "Usúario não existente" });
+        return;
+      }
+
+      const { status } = z
+        .object({
+          status: z.enum(["backlog", "todo", "in-progress", "done"]).optional(),
+        })
+        .parse(req.body);
+
+      const updatedTask = await prisma.task.update({
+        where: { id: parseInt(taskId) },
+        data: {
+          status,
         },
       });
 

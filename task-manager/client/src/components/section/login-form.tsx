@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { settingData } from "@/lib/fecth";
+import { api } from "@/lib/fecth";
 import { createSession } from "@/utils/session";
 import {
   Form,
@@ -54,12 +54,15 @@ export function LoginForm({
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      const response = await settingData<HttpResponseDataType<LoginResponse>>(
-        "/login",
-        JSON.stringify(data)
-      );
+      const response = await api("/login", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
 
-      await createSession(data.email, response.data.token);
+      const responseData: HttpResponseDataType<LoginResponse> =
+        await response.json();
+
+      await createSession(data.email, responseData.data.token);
 
       toast({
         title: "Login feito com sucesso",

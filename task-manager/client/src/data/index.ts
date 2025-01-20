@@ -1,4 +1,4 @@
-import { ChartColumn, DotSquare, ListTodo } from "lucide-react";
+import { ChartColumn, ListTodo } from "lucide-react";
 
 export const Menudata = {
   navGeral: [
@@ -11,13 +11,6 @@ export const Menudata = {
       title: "Todas as tarefas",
       url: "/tasks",
       icon: ListTodo,
-    },
-  ],
-  navCategory: [
-    {
-      title: "TRabalho Escolar",
-      url: "/tasks/categoria",
-      icon: DotSquare,
     },
   ],
 };
