@@ -1,4 +1,4 @@
-import { ChartColumn, DotSquare, ListTodo } from "lucide-react";
+import { ChartColumn, ListTodo } from "lucide-react";
 
 export const Menudata = {
   navGeral: [
