@@ -7,12 +7,11 @@ import {
 import { Layout } from "./layout";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
-import DashboardTasks from "@/pages/tasks";
 import Home from "@/pages/home";
-import DashboardTask from "@/pages/task";
 import { Private } from "./private";
 import NotFound from "@/pages/not-found";
 import { Register } from "@/pages/register";
+import DashboardTasks from "@/pages/tasks";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,7 +21,7 @@ const router = createBrowserRouter(
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tasks" element={<DashboardTasks />} />
-          <Route path="/tasks/:categoryId" element={<DashboardTask />} />
+          <Route path="/tasks/:categoryId" element={<DashboardTasks />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />

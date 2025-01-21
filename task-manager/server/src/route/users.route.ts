@@ -4,6 +4,7 @@ import prisma from "../lib/prima";
 import { SignJWT } from "jose";
 import { z } from "zod";
 import { authenticate } from "../utils/auth";
+import { getTasksForChart } from "../utils/tasks";
 
 // Environment variables (replace with dotenv or similar in production)
 
@@ -154,6 +155,50 @@ export default async function userRoutes(app: FastifyInstance) {
       reply.code(400).send({ erro: error, message: "algum erro desconhecido" });
     }
   });
+
+  app.get(
+    "/profile/resume",
+    { preHandler: authenticate },
+    async (req, reply) => {
+      try {
+        const {
+          user: { id },
+        } = userCredentials.parse(req.query);
+
+        const user = await prisma.user.findUnique({
+          where: {
+            id: Number(id),
+          },
+          select: {
+            email: true,
+            id: true,
+            name: true,
+            role: true,
+            tasks: true,
+            createdAt: true,
+          },
+        });
+
+        if (!user) {
+          reply
+            .code(204)
+            .send({ data: user, message: "Usuário não encotrado" });
+          return;
+        }
+
+        const chart = await getTasksForChart();
+
+        reply.code(200).send({
+          data: chart,
+          message: "dados encotrado com sucesso",
+        });
+      } catch (error) {
+        reply
+          .code(400)
+          .send({ erro: error, message: "algum erro desconhecido" });
+      }
+    }
+  );
 
   app.delete("/profile", { preHandler: authenticate }, async (req, reply) => {
     try {

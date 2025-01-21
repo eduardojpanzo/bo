@@ -16,6 +16,7 @@ model User {
   name       String?
   password   String
   role       String     @default("owner")
+  createdAt  DateTime   @default(now())
   tasks      Task[]
   categories Category[]
 
@@ -46,10 +47,11 @@ model Task {
 }
 
 model Category {
-  id     Int    @id @default(autoincrement())
-  name   String
-  slug   String @unique
-  userId Int
-  tasks  Task[]
-  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  userId    Int
+  createdAt DateTime @default(now())
+  tasks     Task[]
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

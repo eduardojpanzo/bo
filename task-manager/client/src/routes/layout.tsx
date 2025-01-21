@@ -9,7 +9,7 @@ export function Layout() {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="w-full lg:max-w-[calc(100dvw-256px)] p-4 bg-background min-h-[calc(100vh-64px)]">
+        <main className="w-full lg:max-w-[calc(100dvw-256px)] mx-auto p-4 bg-background min-h-[calc(100vh-64px)]">
           <Outlet />
         </main>
       </SidebarInset>

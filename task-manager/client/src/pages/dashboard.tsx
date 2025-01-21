@@ -6,6 +6,12 @@ import { useAuth } from "@/contexts/auth-provider";
 import { useDialog } from "@/contexts/dialog-context";
 import { Plus } from "lucide-react";
 import art from "./../../src/assets/art.png";
+import { useQuery } from "@tanstack/react-query";
+import { ResumeModel } from "@/models/resume.model";
+import { gettingData } from "@/lib/fecth";
+import { ChartBarResune } from "@/components/chart-bar-resume";
+import { formatDateRange, formatToFullDate } from "@/lib/utils";
+import { ChartLineResume } from "@/components/chart-line-resume";
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -16,6 +22,19 @@ export default function Dashboard() {
       // handleAccept: async () => await refresh(),
     });
   };
+
+  const loadResumeData = async () => {
+    const resumeData = await gettingData<HttpResponseDataType<ResumeModel[]>>(
+      ResumeModel.ENDPOINT
+    );
+
+    return resumeData.data;
+  };
+
+  const { data: resume } = useQuery({
+    queryKey: ["resume-data"],
+    queryFn: loadResumeData,
+  });
 
   return (
     <main className="flex flex-col gap-5 lg:flex-row">
@@ -59,9 +78,22 @@ export default function Dashboard() {
             }
           />
         </div>
+
+        <div>
+          <ChartLineResume
+            subtitle={formatDateRange(
+              resume?.map((item) => ({ date: item.date ?? "" }))
+            )}
+            chartData={resume?.map((item) => ({
+              created: item.created ?? 0,
+              completed: item.completed ?? 0,
+              date: formatToFullDate(item.date ?? ""),
+            }))}
+          />
+        </div>
       </section>
 
-      <aside className="max-w-96">
+      <aside className="max-w-96 flex flex-col gap-5">
         <div className="w-96 h-24 mx-auto flex items-center justify-between p-4 rounded-xl bg-accent">
           <p>
             <strong>Crie tarefa</strong> <br />
@@ -73,6 +105,15 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        <ChartBarResune
+          chartData={resume
+            ?.map((item) => ({
+              created: item.created ?? 0,
+              completed: item.completed ?? 0,
+              date: formatToFullDate(item.date ?? ""),
+            }))
+            .slice(resume.length - 1)}
+        />
         <ResumeCalendar />
       </aside>
     </main>

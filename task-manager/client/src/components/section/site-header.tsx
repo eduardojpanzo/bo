@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Logo } from "../logo";
 
 export function SiteHeader() {
@@ -26,6 +27,54 @@ export function SiteHeader() {
           id="collapse-btn"
         ></button>
       </div>
+    </header>
+  );
+}
+
+export function Header() {
+  return (
+    <header className="z-10">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Topo">
+        <div className="w-full py-6 flex items-center justify-between">
+          <div className="flex items-center">
+            <Logo />
+            <div className="hidden ml-10 space-x-8 lg:block">
+              <Link
+                to="#recursos"
+                className="text-base font-medium text-gray-500 hover:text-gray-900"
+              >
+                Recursos
+              </Link>
+              <Link
+                to="#depoimentos"
+                className="text-base font-medium text-gray-500 hover:text-gray-900"
+              >
+                Depoimentos
+              </Link>
+              <Link
+                to="#precos"
+                className="text-base font-medium text-gray-500 hover:text-gray-900"
+              >
+                Preços
+              </Link>
+            </div>
+          </div>
+          <div className="ml-10 space-x-4">
+            <Link
+              to="/login"
+              className="inline-block bg-primary py-2 px-4 border border-transparent rounded-md text-base font-medium text-white hover:bg-opacity-75"
+            >
+              Entrar
+            </Link>
+            <Link
+              to="/register"
+              className="inline-block bg-white py-2 px-4 border border-transparent rounded-md text-base font-medium text-primary hover:bg-pritext-primary"
+            >
+              Cadastrar
+            </Link>
+          </div>
+        </div>
+      </nav>
     </header>
   );
 }
