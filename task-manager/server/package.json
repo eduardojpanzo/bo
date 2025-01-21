@@ -26,6 +26,7 @@
     "@fastify/cors": "^10.0.1",
     "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
+    "date-fns": "^4.1.0",
     "fastify": "^5.1.0",
     "jose": "^5.9.6",
     "zod": "^3.23.8"
