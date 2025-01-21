@@ -34,9 +34,7 @@ const formSchema = z.object({
   title: z.string({ message: "Por favor insira o titulo" }).min(4, {
     message: "O titulo da tarefa deve ter pelo menos 4 caracteres",
   }),
-  description: z.string().min(10, {
-    message: "O descricão deve ser mais que 10 caracteres",
-  }),
+  description: z.string().optional(),
   dueDate: z
     .string({ message: "Informe uma data válida" })
     .transform((date) => new Date(date).toISOString()),
@@ -215,7 +213,10 @@ function useFromAction(id?: number) {
         variant: "default",
       });
       queryClient.invalidateQueries({
-        queryKey: ["tasks-list", "profile-data"],
+        queryKey: ["tasks-list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["resume-data"],
       });
       queryClient.invalidateQueries({
         queryKey: ["profile-data"],
@@ -227,7 +228,7 @@ function useFromAction(id?: number) {
       const path = id ? `${TaskModel.ENDPOINT}/${id}` : `${TaskModel.ENDPOINT}`;
       const data = {
         title: values.title,
-        description: values.description,
+        description: values.description ?? "",
         dueDate: values.dueDate,
         status: values.status.value,
         categoryId: values.categoryId.value,
