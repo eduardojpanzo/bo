@@ -39,24 +39,24 @@ export function Header() {
           <div className="flex items-center">
             <Logo />
             <div className="hidden ml-10 space-x-8 lg:block">
-              <Link
-                to="#recursos"
+              <a
+                href="#recursos"
                 className="text-base font-medium text-gray-500 hover:text-gray-900"
               >
                 Recursos
-              </Link>
-              <Link
-                to="#depoimentos"
+              </a>
+              <a
+                href="#depoimentos"
                 className="text-base font-medium text-gray-500 hover:text-gray-900"
               >
                 Depoimentos
-              </Link>
-              <Link
-                to="#precos"
+              </a>
+              <a
+                href="#precos"
                 className="text-base font-medium text-gray-500 hover:text-gray-900"
               >
                 Preços
-              </Link>
+              </a>
             </div>
           </div>
           <div className="ml-10 space-x-4">
