@@ -1,3 +1,7 @@
+import { buildInitials } from "@/utils";
+import logoImg from "../../assets/ntangu-verde.svg";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
 export default function Depoimentos() {
   return (
     <section
@@ -6,11 +10,7 @@ export default function Depoimentos() {
     >
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative">
-          <img
-            className="mx-auto h-8"
-            src="/placeholder.svg?height=32&width=160"
-            alt="Ntangu"
-          />
+          <img className="mx-auto h-8" src={logoImg} alt="Ntangu" />
           <blockquote className="mt-10">
             <div className="max-w-3xl mx-auto text-center text-2xl leading-9 font-medium text-gray-900">
               <p>
@@ -23,11 +23,12 @@ export default function Depoimentos() {
             <footer className="mt-8">
               <div className="md:flex md:items-center md:justify-center">
                 <div className="md:flex-shrink-0">
-                  <img
-                    className="mx-auto h-10 w-10 rounded-full"
-                    src="/placeholder.svg?height=40&width=40"
-                    alt=""
-                  />
+                  <Avatar className="max-w-10 rounded-none max-h-10">
+                    <AvatarImage className="rounded-none" src={""} />
+                    <AvatarFallback>
+                      {buildInitials("Ana Silva")}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="mt-3 text-center md:mt-0 md:ml-4 md:flex md:items-center">
                   <div className="text-base font-medium text-gray-900">
