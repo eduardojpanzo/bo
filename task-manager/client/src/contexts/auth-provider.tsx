@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data: HttpResponseDataType<ProfileModel> = await response.json();
       setProfile(data.data);
       setToken(session.token);
+      return data.data;
     } catch {
       setToken(null);
       toast({
