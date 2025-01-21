@@ -8,7 +8,7 @@ import Rodape from "@/components/section/site-rodape";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col scroll-smooth">
       <div className="absolute top-0 flex h-[150px] w-full">
         <div className="header-gradient h-full w-full"></div>
       </div>
