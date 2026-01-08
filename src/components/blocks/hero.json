@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_blocks_heroes",
+  "info": {
+    "displayName": "hero",
+    "icon": "expand"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "href": {
+      "type": "string"
+    },
+    "paragraphs": {
+      "type": "component",
+      "component": "elements.text",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

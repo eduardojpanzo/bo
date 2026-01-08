@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_elements_texts",
+  "info": {
+    "displayName": "text",
+    "icon": "filter"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}
