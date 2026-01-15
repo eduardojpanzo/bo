@@ -8,7 +8,7 @@ export interface BlocksHero extends Struct.ComponentSchema {
   };
   attributes: {
     cover: Schema.Attribute.Media<'images'>;
-    heading: Schema.Attribute.String;
+    heading: Schema.Attribute.Text & Schema.Attribute.Required;
     href: Schema.Attribute.String;
     paragraphs: Schema.Attribute.Component<'elements.text', true>;
   };
